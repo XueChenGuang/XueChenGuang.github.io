@@ -5,6 +5,7 @@
     <link href="http://example.com" />
     <updated>2023-07-13T06:14:28.000Z</updated>
     <category term="hello blog" />
+    <category term="设计模式" />
     <entry>
         <id>http://example.com/2023/07/13/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87blog/</id>
         <title>我的第一篇blog</title>
