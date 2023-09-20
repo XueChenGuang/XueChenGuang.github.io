@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>http://example.com</id>
+    <title>该死的秋招 • Posts by &#34;mysql&#34; tag</title>
+    <link href="http://example.com" />
+    <updated>2023-09-14T13:31:27.000Z</updated>
+    <category term="hello blog" />
+    <category term="设计模式" />
+    <category term="MySQL" />
+    <category term="算法" />
+    <entry>
+        <id>http://example.com/2023/09/14/Explain%E5%92%8C%E7%B4%A2%E5%BC%95/</id>
+        <title>Explain和索引</title>
+        <link rel="alternate" href="http://example.com/2023/09/14/Explain%E5%92%8C%E7%B4%A2%E5%BC%95/"/>
+        <content type="html">&lt;h3 id=&#34;前言&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#前言&#34;&gt;#&lt;/a&gt; 前言&lt;/h3&gt;
+&lt;p&gt;从原先的 “原来还能通过 explain” 查看 sql 的运行效率，到 “请你讲讲 explain 中的各个字段”，再到 “解释一下 extra 字段的值的含义以及效率排序”，一脸懵，不学不行啊，记录一下呗。&lt;/p&gt;
+&lt;h3 id=&#34;explain&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#explain&#34;&gt;#&lt;/a&gt; Explain&lt;/h3&gt;
+&lt;p&gt;当需要查看一下当前 sql 在 mysql 中的运行状态时（这个状态包括一些执行时间，是否使用索引，检索的表，检索字段大小）等等，主要还是针对一些其中的字段值，来判断如何进一步优化 sql。&lt;/p&gt;
+&lt;p&gt;说实话，explain 很复杂，没太整明白。主要就说一些自己整明白的点吧&lt;/p&gt;
+&lt;p&gt;ID：如果存在多个 select 的话，那么 id 就会有多个值，id 值越大，表示优先级越高。&lt;/p&gt;
+&lt;p&gt;select_type：查询类型，也就是存在多个 select 的时候，这个时候就会有不同的类型出现，整明白的也就几个吧：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;simple，表示最简单的查询，无嵌套&lt;/li&gt;
+&lt;li&gt;primary，最外层的查询&lt;/li&gt;
+&lt;li&gt;union，用 union 接的查询；也不是百分百，如果接在子查询里面，那么貌似第一个是 derived&lt;/li&gt;
+&lt;li&gt;derived，子查询&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;table：查询的表&lt;/p&gt;
+&lt;p&gt;type：连接类型，也就是存在级联查询中，下面按照关键字优先级展开简单讲讲每个关键字吧：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;system，个人感觉不太存在，也就是这个表只有一行，emmm 太抽象&lt;/li&gt;
+&lt;li&gt;const，针对主键或唯一建的查询，只返回一行，比较好理解&lt;/li&gt;
+&lt;li&gt;eq_ref，使用了索引的全部组成，并且索引是主键或者唯一键，也好理解&lt;/li&gt;
+&lt;li&gt;ref, 不是很懂，貌似是用到了索引，但是没有主键索引和唯一键索引&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;range：范围查询涉及到的字段，关键字貌似就两个 index 和 all，很明显一个用到了索引，另一个全表扫描，如果全表的话，就需要反思一下了&lt;/p&gt;
+&lt;p&gt;possible_key 和 key：这两个放一起讲好了，也就是有的索引和用到的索引，没什么好讲的。&lt;/p&gt;
+&lt;p&gt;key_len：索引字段长度，没什么好讲的&lt;/p&gt;
+&lt;p&gt;rows：估计会扫描的行数，值越小越好&lt;/p&gt;
+&lt;p&gt;extra：额外信息，感觉和前面给到的信息有点重，但是可能是针对不同场景的，下面有些字段要说明一下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;using filesort，文件排序，sql 中包含 order by，然后索引不足以解决 order，那么 mysql 会选择使用内存，超过一定长度就磁盘，这种情况就是这个字段。&lt;/li&gt;
+&lt;li&gt;using temporary，临时表，sql 中包含 group by，这个时候索引不足以解决问题，那么就会借助临时表来完成&lt;/li&gt;
+&lt;li&gt;using index，使用索引可以解决，&lt;/li&gt;
+&lt;li&gt;using where，满足部分的索引，也就是使用了，但没完全使用，比如仅满足&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+        <category term="MySQL" />
+        <updated>2023-09-14T13:31:27.000Z</updated>
+    </entry>
+</feed>
