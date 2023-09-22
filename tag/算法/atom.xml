@@ -8,6 +8,8 @@
     <category term="设计模式" />
     <category term="MySQL" />
     <category term="算法" />
+    <category term="Redis" />
+    <category term="其他" />
     <entry>
         <id>http://example.com/2023/09/20/UF%E5%92%8CKruskal/</id>
         <title>UF和Kruskal</title>

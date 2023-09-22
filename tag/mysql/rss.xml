@@ -11,6 +11,8 @@
         <category>设计模式</category>
         <category>MySQL</category>
         <category>算法</category>
+        <category>Redis</category>
+        <category>其他</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/09/14/Explain%E5%92%8C%E7%B4%A2%E5%BC%95/</guid>
             <title>Explain和索引</title>

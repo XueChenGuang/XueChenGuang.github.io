@@ -8,6 +8,8 @@
     <category term="设计模式" />
     <category term="MySQL" />
     <category term="算法" />
+    <category term="Redis" />
+    <category term="其他" />
     <entry>
         <id>http://example.com/2023/09/14/Explain%E5%92%8C%E7%B4%A2%E5%BC%95/</id>
         <title>Explain和索引</title>

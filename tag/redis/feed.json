@@ -1,0 +1,18 @@
+{
+    "version": "https://jsonfeed.org/version/1",
+    "title": "该死的秋招 • All posts by \"redis\" tag",
+    "description": "孵化中···",
+    "home_page_url": "http://example.com",
+    "items": [
+        {
+            "id": "http://example.com/2023/09/20/Redis%E7%BC%93%E5%AD%98/",
+            "url": "http://example.com/2023/09/20/Redis%E7%BC%93%E5%AD%98/",
+            "title": "Redis缓存",
+            "date_published": "2023-09-20T14:23:45.000Z",
+            "content_html": "<h3 id=\"前言\"><a class=\"markdownIt-Anchor\" href=\"#前言\">#</a> 前言</h3>\n<p>一切都是为了更流利的表达</p>\n<h3 id=\"缓存雪崩-击穿-穿透的定义以及解决方案\"><a class=\"markdownIt-Anchor\" href=\"#缓存雪崩-击穿-穿透的定义以及解决方案\">#</a> 缓存雪崩、击穿、穿透的定义以及解决方案</h3>\n<h3 id=\"缓存同步策略\"><a class=\"markdownIt-Anchor\" href=\"#缓存同步策略\">#</a> 缓存同步策略</h3>\n<h3 id=\"高可用\"><a class=\"markdownIt-Anchor\" href=\"#高可用\">#</a> 高可用</h3>\n",
+            "tags": [
+                "Redis"
+            ]
+        }
+    ]
+}
