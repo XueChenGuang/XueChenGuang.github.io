@@ -10,6 +10,8 @@
     <category term="算法" />
     <category term="Redis" />
     <category term="其他" />
+    <category term="分布式" />
+    <category term="数据结构" />
     <entry>
         <id>http://example.com/2023/09/20/Redis%E7%BC%93%E5%AD%98/</id>
         <title>Redis缓存</title>

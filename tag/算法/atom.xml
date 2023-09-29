@@ -10,6 +10,8 @@
     <category term="算法" />
     <category term="Redis" />
     <category term="其他" />
+    <category term="分布式" />
+    <category term="数据结构" />
     <entry>
         <id>http://example.com/2023/09/20/UF%E5%92%8CKruskal/</id>
         <title>UF和Kruskal</title>

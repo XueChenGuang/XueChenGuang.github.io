@@ -13,6 +13,8 @@
         <category>算法</category>
         <category>Redis</category>
         <category>其他</category>
+        <category>分布式</category>
+        <category>数据结构</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/09/22/%E7%AC%94%E8%AF%95%E9%80%89%E6%8B%A9%E9%A2%98%E9%9B%B6%E6%95%A3%E7%9F%A5%E8%AF%86%E7%82%B9-%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/</guid>
             <title>笔试选择题零散知识点--持续更新</title>
@@ -26,7 +28,8 @@
 必须赋初值，然后使用，不然直接报编译错误，无法通过编译。&lt;br&gt;
 但是引用类型或者数组就不一样，对于 new 的&lt;/p&gt;
 &lt;p&gt;2、集合继承图&lt;br&gt;
-&lt;img data-src=&#34;https://pic.imgdb.cn/item/650d122ac458853aef243cba.png&#34; alt=&#34;alt&#34;&gt;&lt;/p&gt;
+&lt;img data-src=&#34;https://pic.imgdb.cn/item/650d122ac458853aef243cba.png&#34; alt=&#34;alt&#34;&gt;&lt;br&gt;
+ 这边主要是将 map 记混了，以为都是继承的 collection，然后就是有一些线程安全的集合，vector、hashtable 以及 stack 是继承的 vector&lt;/p&gt;
  ]]></description>
         </item>
     </channel>

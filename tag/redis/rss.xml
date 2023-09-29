@@ -13,6 +13,8 @@
         <category>算法</category>
         <category>Redis</category>
         <category>其他</category>
+        <category>分布式</category>
+        <category>数据结构</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/09/20/Redis%E7%BC%93%E5%AD%98/</guid>
             <title>Redis缓存</title>

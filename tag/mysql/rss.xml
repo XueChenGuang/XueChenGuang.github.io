@@ -5,14 +5,61 @@
         <link>http://example.com</link>
         <description>孵化中···</description>
         <language>zh-CN</language>
-        <pubDate>Thu, 14 Sep 2023 21:31:27 +0800</pubDate>
-        <lastBuildDate>Thu, 14 Sep 2023 21:31:27 +0800</lastBuildDate>
+        <pubDate>Mon, 25 Sep 2023 17:44:47 +0800</pubDate>
+        <lastBuildDate>Mon, 25 Sep 2023 17:44:47 +0800</lastBuildDate>
         <category>hello blog</category>
         <category>设计模式</category>
         <category>MySQL</category>
         <category>算法</category>
         <category>Redis</category>
         <category>其他</category>
+        <category>分布式</category>
+        <category>数据结构</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2023/09/25/%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/</guid>
+            <title>事务的隔离性</title>
+            <link>http://example.com/2023/09/25/%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/</link>
+            <category>MySQL</category>
+            <pubDate>Mon, 25 Sep 2023 17:44:47 +0800</pubDate>
+            <description><![CDATA[ &lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;一直有种面对隔离级别的恐惧，这次看懂了，稍做记录&lt;/p&gt;
+&lt;h3 id=&#34;基本概念&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#基本概念&#34;&gt;#&lt;/a&gt; 基本概念&lt;/h3&gt;
+&lt;p&gt;如果是单线程，那么完全不会出现什么问题。直到多线程的出现，就引发了一些列的问题：脏读，不可重复读，幻读。简单解释一下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;脏读：一个事务读取到了另一个没有提交事务修改过的数据&lt;/li&gt;
+&lt;li&gt;不可重复读：一个事务内，两次读取到的同一数据的内容不一样&lt;/li&gt;
+&lt;li&gt;幻读：一个事务内，查询符合条件的记录数，两次读到的记录数不一样&lt;br&gt;
+以上的严重性，就是由上到下递减。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;与之对应的有几个隔离级别：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;读未提交&lt;/li&gt;
+&lt;li&gt;读已提交&lt;/li&gt;
+&lt;li&gt;可重复读&lt;/li&gt;
+&lt;li&gt;串行&lt;br&gt;
+ innodb 存储引擎，默认的隔离级别是可重复读。&lt;br&gt;
+简单点来说的话就是，读未提交就是读最新数据；读已提交就是可以读到其他事务提交的内容；可重复读就是可以重复读取相同的数据；串行，就是事务挨着事务，加锁了。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;read-view和隐藏字段&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#read-view和隐藏字段&#34;&gt;#&lt;/a&gt; Read view 和隐藏字段&lt;/h3&gt;
+&lt;p&gt;一条记录有两个隐藏字段：trx_id 和 roll_pointer；分别表示最新修改的事务的 id 和指向 undo_log 中的日志指针。&lt;/p&gt;
+&lt;p&gt;read view 说白了就是有关事务 id 的一种数据结构，这里面的主要结构就是四个字段：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;min_trx_id：当前存在的 id 最小的事务（注：事务的 id 是自增长的）&lt;/li&gt;
+&lt;li&gt;max_trx_id：下一个事务 id&lt;/li&gt;
+&lt;li&gt;m_ids：当前存在的事务 id 列表&lt;/li&gt;
+&lt;li&gt;creator_trx_id：创建的事务 id&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;mvcc多版本并发控制实现&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#mvcc多版本并发控制实现&#34;&gt;#&lt;/a&gt; mvcc（多版本并发控制）实现&lt;/h3&gt;
+&lt;p&gt;感觉也没什么高深的，看了才知道就是利用上面的字段来完成的，也就是要明白一些规则。&lt;br&gt;
+注意：这边我刚明白的一点，read view 的创建和事务没有必然的关系，也就是 read view 可以是在事务中创建，也可以在一开始创建也就对应这两种隔离级别，所以 min，max，ids 这几个字段才有了不可替代性。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对于不活跃的资源我可以改动，也就是小于 min 的。&lt;/li&gt;
+&lt;li&gt;对于未创建的我不能改动，也就是大于等于 max 的&lt;/li&gt;
+&lt;li&gt;对于之间的，也就要看在不在 ids 中了，也就是这个事务提交了没有。如果我创建 read view 的时候，他提交了，那么我就可以读了。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;看到了哪些可以读，那么就直接读，如果不可以读，就顺着 roll_pointer 链找下去，也就是找之前的记录，来完成当前的事务的隔离。&lt;/p&gt;
+ ]]></description>
+        </item>
         <item>
             <guid isPermalink="true">http://example.com/2023/09/14/Explain%E5%92%8C%E7%B4%A2%E5%BC%95/</guid>
             <title>Explain和索引</title>

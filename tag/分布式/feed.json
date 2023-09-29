@@ -1,0 +1,18 @@
+{
+    "version": "https://jsonfeed.org/version/1",
+    "title": "该死的秋招 • All posts by \"分布式\" tag",
+    "description": "孵化中···",
+    "home_page_url": "http://example.com",
+    "items": [
+        {
+            "id": "http://example.com/2023/09/28/%E5%B9%82%E7%AD%89%E5%AE%9E%E7%8E%B0/",
+            "url": "http://example.com/2023/09/28/%E5%B9%82%E7%AD%89%E5%AE%9E%E7%8E%B0/",
+            "title": "幂等实现",
+            "date_published": "2023-09-28T07:06:03.000Z",
+            "content_html": "<h3 id=\"写在前面\"><a class=\"markdownIt-Anchor\" href=\"#写在前面\">#</a> 写在前面</h3>\n<p>关于幂等的实现，属于是一个高频的面试题吧，所以直接做一个记录，其实这是很大的一块</p>\n<h3 id=\"定义\"><a class=\"markdownIt-Anchor\" href=\"#定义\">#</a> 定义</h3>\n<p>幂等原先用于数学领域，转到计算机就是接口幂等，那么也就是多次请求效果和一次一样。</p>\n<h3 id=\"产生的背景\"><a class=\"markdownIt-Anchor\" href=\"#产生的背景\">#</a> 产生的背景</h3>\n<ul>\n<li>恶意</li>\n<li>客户端重复提交，也就是 button 的问题，表单重复提交</li>\n<li>超时重试，这个背景包括前后端连接超时，前端等待后端结果超时，主要是后者</li>\n<li>重复消费，感觉有点勉强（可说可不说吧，主要是没有用到 mq）</li>\n</ul>\n<h3 id=\"引入幂等的后果\"><a class=\"markdownIt-Anchor\" href=\"#引入幂等的后果\">#</a> 引入幂等的后果</h3>\n<ul>\n<li>增加后端处理逻辑，因为要判重等</li>\n<li>将并行改为串行，简单点说就是直接通过单通道限制资源<br>\n所以就是说建议非必要不幂等，感觉也就是一些支付啊什么的需要幂等，要么就直接限制前端就行了。</li>\n</ul>\n<h3 id=\"幂等的实现方案\"><a class=\"markdownIt-Anchor\" href=\"#幂等的实现方案\">#</a> 幂等的实现方案</h3>\n<p>感觉总的可以分为这样几大类：</p>\n<ul>\n<li>insert，也就是有唯一主键来做约束，交给数据库，落库就主键冲突</li>\n<li>update，这个时候就涉及到锁了，乐观，悲观以及分布式锁</li>\n</ul>\n<h4 id=\"insert操作\"><a class=\"markdownIt-Anchor\" href=\"#insert操作\">#</a> insert 操作</h4>\n<p>通过主键给个防重表，如果重复了，那么返回成功，否则就执行。<br>\n网上有个说法：对于并发大的使用 select 再 insert（这边就要加锁了，因为是两个步骤），对于并发不大的直接使用 insert；个人觉得没什么道理，后面再看。</p>\n<p>使用防重表，主要是为了实现业务和判重分离，其实直接用业务表的主键也是可以的。</p>\n<h3 id=\"update\"><a class=\"markdownIt-Anchor\" href=\"#update\">#</a> update</h3>\n<h4 id=\"token\"><a class=\"markdownIt-Anchor\" href=\"#token\">#</a> token</h4>\n<p>token，借助 redis；客户端发送请求，服务端给出唯一 token，先落库 redis 还是先给客户端，感觉有说法；然后客户端携带着 token 来第二次请求，请求成功那么执行并删除 token；否则幂等，直接返回。</p>\n<p>token 建议用雪花算法，也就是时间戳 41 位 + 主机 + 随机</p>\n<h4 id=\"上锁\"><a class=\"markdownIt-Anchor\" href=\"#上锁\">#</a> 上锁</h4>\n<ul>\n<li>悲观锁，select for update</li>\n<li>乐观锁，加入自增版本号，用 cas 也就是携带着版本号进行 insert；也就是先 select 获取版本号，然后 insert</li>\n<li>分布式锁，可以使用 zookeeper 和 redis，具体的使用感觉有点儿麻烦，目前不是很会，大致的就是获取到分布式锁了就执行，否则直接返回。</li>\n</ul>\n",
+            "tags": [
+                "分布式"
+            ]
+        }
+    ]
+}

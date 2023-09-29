@@ -9,7 +9,7 @@
             "url": "http://example.com/2023/09/22/%E7%AC%94%E8%AF%95%E9%80%89%E6%8B%A9%E9%A2%98%E9%9B%B6%E6%95%A3%E7%9F%A5%E8%AF%86%E7%82%B9-%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/",
             "title": "笔试选择题零散知识点--持续更新",
             "date_published": "2023-09-22T03:28:03.000Z",
-            "content_html": "<h3 id=\"写在前面\"><a class=\"markdownIt-Anchor\" href=\"#写在前面\">#</a> 写在前面</h3>\n<p>主要为了应付选择题一些极其细节的编程问题，还有一些范围很广的概念性问题，话不多说，直接开始</p>\n<h3 id=\"无标题\"><a class=\"markdownIt-Anchor\" href=\"#无标题\">#</a> 无标题</h3>\n<p>1、基础类型的使用：<br>\n必须赋初值，然后使用，不然直接报编译错误，无法通过编译。<br>\n但是引用类型或者数组就不一样，对于 new 的</p>\n<p>2、集合继承图<br>\n<img data-src=\"https://pic.imgdb.cn/item/650d122ac458853aef243cba.png\" alt=\"alt\"></p>\n",
+            "content_html": "<h3 id=\"写在前面\"><a class=\"markdownIt-Anchor\" href=\"#写在前面\">#</a> 写在前面</h3>\n<p>主要为了应付选择题一些极其细节的编程问题，还有一些范围很广的概念性问题，话不多说，直接开始</p>\n<h3 id=\"无标题\"><a class=\"markdownIt-Anchor\" href=\"#无标题\">#</a> 无标题</h3>\n<p>1、基础类型的使用：<br>\n必须赋初值，然后使用，不然直接报编译错误，无法通过编译。<br>\n但是引用类型或者数组就不一样，对于 new 的</p>\n<p>2、集合继承图<br>\n<img data-src=\"https://pic.imgdb.cn/item/650d122ac458853aef243cba.png\" alt=\"alt\"><br>\n 这边主要是将 map 记混了，以为都是继承的 collection，然后就是有一些线程安全的集合，vector、hashtable 以及 stack 是继承的 vector</p>\n",
             "tags": [
                 "其他"
             ]

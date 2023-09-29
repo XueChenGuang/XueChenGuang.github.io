@@ -3,13 +3,155 @@
     <id>http://example.com</id>
     <title>该死的秋招</title>
     <link href="http://example.com" />
-    <updated>2023-09-22T03:28:03.000Z</updated>
+    <updated>2023-09-28T07:06:03.000Z</updated>
     <category term="hello blog" />
     <category term="设计模式" />
     <category term="MySQL" />
     <category term="算法" />
     <category term="Redis" />
     <category term="其他" />
+    <category term="分布式" />
+    <category term="数据结构" />
+    <entry>
+        <id>http://example.com/2023/09/28/%E5%B9%82%E7%AD%89%E5%AE%9E%E7%8E%B0/</id>
+        <title>幂等实现</title>
+        <link rel="alternate" href="http://example.com/2023/09/28/%E5%B9%82%E7%AD%89%E5%AE%9E%E7%8E%B0/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;关于幂等的实现，属于是一个高频的面试题吧，所以直接做一个记录，其实这是很大的一块&lt;/p&gt;
+&lt;h3 id=&#34;定义&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#定义&#34;&gt;#&lt;/a&gt; 定义&lt;/h3&gt;
+&lt;p&gt;幂等原先用于数学领域，转到计算机就是接口幂等，那么也就是多次请求效果和一次一样。&lt;/p&gt;
+&lt;h3 id=&#34;产生的背景&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#产生的背景&#34;&gt;#&lt;/a&gt; 产生的背景&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;恶意&lt;/li&gt;
+&lt;li&gt;客户端重复提交，也就是 button 的问题，表单重复提交&lt;/li&gt;
+&lt;li&gt;超时重试，这个背景包括前后端连接超时，前端等待后端结果超时，主要是后者&lt;/li&gt;
+&lt;li&gt;重复消费，感觉有点勉强（可说可不说吧，主要是没有用到 mq）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;引入幂等的后果&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#引入幂等的后果&#34;&gt;#&lt;/a&gt; 引入幂等的后果&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;增加后端处理逻辑，因为要判重等&lt;/li&gt;
+&lt;li&gt;将并行改为串行，简单点说就是直接通过单通道限制资源&lt;br&gt;
+所以就是说建议非必要不幂等，感觉也就是一些支付啊什么的需要幂等，要么就直接限制前端就行了。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;幂等的实现方案&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#幂等的实现方案&#34;&gt;#&lt;/a&gt; 幂等的实现方案&lt;/h3&gt;
+&lt;p&gt;感觉总的可以分为这样几大类：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;insert，也就是有唯一主键来做约束，交给数据库，落库就主键冲突&lt;/li&gt;
+&lt;li&gt;update，这个时候就涉及到锁了，乐观，悲观以及分布式锁&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;insert操作&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#insert操作&#34;&gt;#&lt;/a&gt; insert 操作&lt;/h4&gt;
+&lt;p&gt;通过主键给个防重表，如果重复了，那么返回成功，否则就执行。&lt;br&gt;
+网上有个说法：对于并发大的使用 select 再 insert（这边就要加锁了，因为是两个步骤），对于并发不大的直接使用 insert；个人觉得没什么道理，后面再看。&lt;/p&gt;
+&lt;p&gt;使用防重表，主要是为了实现业务和判重分离，其实直接用业务表的主键也是可以的。&lt;/p&gt;
+&lt;h3 id=&#34;update&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#update&#34;&gt;#&lt;/a&gt; update&lt;/h3&gt;
+&lt;h4 id=&#34;token&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#token&#34;&gt;#&lt;/a&gt; token&lt;/h4&gt;
+&lt;p&gt;token，借助 redis；客户端发送请求，服务端给出唯一 token，先落库 redis 还是先给客户端，感觉有说法；然后客户端携带着 token 来第二次请求，请求成功那么执行并删除 token；否则幂等，直接返回。&lt;/p&gt;
+&lt;p&gt;token 建议用雪花算法，也就是时间戳 41 位 + 主机 + 随机&lt;/p&gt;
+&lt;h4 id=&#34;上锁&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#上锁&#34;&gt;#&lt;/a&gt; 上锁&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;悲观锁，select for update&lt;/li&gt;
+&lt;li&gt;乐观锁，加入自增版本号，用 cas 也就是携带着版本号进行 insert；也就是先 select 获取版本号，然后 insert&lt;/li&gt;
+&lt;li&gt;分布式锁，可以使用 zookeeper 和 redis，具体的使用感觉有点儿麻烦，目前不是很会，大致的就是获取到分布式锁了就执行，否则直接返回。&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+        <category term="分布式" />
+        <updated>2023-09-28T07:06:03.000Z</updated>
+    </entry>
+    <entry>
+        <id>http://example.com/2023/09/26/%E8%B7%B3%E8%A1%A8%E5%92%8C%E7%BA%A2%E9%BB%91%E6%A0%91/</id>
+        <title>跳表和红黑树</title>
+        <link rel="alternate" href="http://example.com/2023/09/26/%E8%B7%B3%E8%A1%A8%E5%92%8C%E7%BA%A2%E9%BB%91%E6%A0%91/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;之前看 hashmap 的时候，研究过红黑树。前段时间同学面携程的时候，面试官给了跳表的八股文，我看到也懵了。翻阅相关资料才知道跳表和红黑树之前还有一定的联系，下面我们来看看。&lt;/p&gt;
+&lt;h3 id=&#34;跳表&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#跳表&#34;&gt;#&lt;/a&gt; 跳表&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;https://pic.imgdb.cn/item/6512d769c458853aeff45850.jpg&#34;&gt;&lt;img data-src=&#34;https://pic.imgdb.cn/item/6512d769c458853aeff45850.jpg&#34; alt=&#34;&#34;&gt;&lt;/a&gt;&lt;br&gt;
+如上图所示，这个就是跳表。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;需要一个有序的链表&lt;/li&gt;
+&lt;li&gt;在有序链表之上建立 n/2 个元素，称之为第一层索引，以此类推，最高层两个索引，由此可以推算出高度，从而时间复杂度为 logn&lt;/li&gt;
+&lt;li&gt;每个元素都有两个属性，一个 val，一个指向下一个的指针，所以很适合做范围查找&lt;/li&gt;
+&lt;li&gt;以空间换时间，这样的话，空间一大，那么代表就是复杂度就下来了，主打的就是一个奢侈。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;红黑树&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#红黑树&#34;&gt;#&lt;/a&gt; 红黑树&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://pic.imgdb.cn/item/6512d93bc458853aeff55fdd.jpg&#34; alt=&#34;&#34;&gt;&lt;br&gt;
+先来讲一下红黑树的特征&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;节点是红色或者黑色&lt;/li&gt;
+&lt;li&gt;根节点黑色&lt;/li&gt;
+&lt;li&gt;任意一条从根节点到叶子节点路径的黑色节点数量相同&lt;/li&gt;
+&lt;li&gt;一条路径不能包含连续的两个红色节点 —》从而可以推出红色节点的父节点必然是黑色&lt;/li&gt;
+&lt;li&gt;红黑树中的叶子节点有点不同，他的叶子节点都是 null&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;红黑树的发展史&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#红黑树的发展史&#34;&gt;#&lt;/a&gt; 红黑树的发展史&lt;/h4&gt;
+&lt;p&gt;这也是之前学习的时候了解了一点，这里就简单的总结一下，为什么会发展到红黑树，毕竟一个技术的诞生肯定是有历史的。&lt;br&gt;
+首先就是从数组和链表说起了，众所不周知，数组是查询 O1，链表是删除 O1（当然这里不是说的定位到再删除）。那么除了组合数据结构，就诞生了树结构。如果不限制树的高度，也就是平衡，那么树结构就会退化为链表，所以查询也会退化到 On。后面引入了 AVL，自平衡二叉树。也就是通过自旋的方式来调整树的高度。由于满足平衡二叉树的条件比较苛刻，导致插入数据后的自选频次很高，所以引入了红黑树。红黑树只需要满足一条路径上的黑色节点数相同就行了，所以如果一条全黑，一条间隔红黑，那么最长可以 n/2 不用调整。&lt;/p&gt;
+&lt;h4 id=&#34;红黑树变形&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#红黑树变形&#34;&gt;#&lt;/a&gt; 红黑树变形&lt;/h4&gt;
+&lt;p&gt;将红色节点上移到其父节点，那么就会形成 B 树一样的结构，四阶 B 树（节点元素最多为 3 个）&lt;/p&gt;
+&lt;h4 id=&#34;自旋&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#自旋&#34;&gt;#&lt;/a&gt; 自旋&lt;/h4&gt;
+&lt;p&gt;些许复杂，后面再搞&lt;/p&gt;
+&lt;h3 id=&#34;跳表和红黑树&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#跳表和红黑树&#34;&gt;#&lt;/a&gt; 跳表和红黑树&lt;/h3&gt;
+&lt;p&gt;hashmap 为什么不用跳表？&lt;br&gt;
+我看到一篇博客说的很有道理，就是 hashmap 存在 hash 冲突才用的红黑树存储相同 hash 散列后得元素，所以这个红黑树虽然是有序得，但是要明白一点，跳表得作用场景是范围查找，且需要空间换时间，但是这边散列后的元素其范围查找值我觉得有意义，但是并不完整，因为这里得范围只是冲突后的元素，那么没冲突得元素，但是在范围内得就无法被跳表涵盖进来。&lt;/p&gt;
+&lt;p&gt;总的来说，就两点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;红黑树不占用额外的空间&lt;/li&gt;
+&lt;li&gt;hashmap 无序存储，没有范围查找的要求，所以用跳表的话，这个范围查找就没有任何的意义。准确点来说，hashmap 只需要精确查找，通过叶子节点来缩小范围，那么跳表是可以做范围检索的。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;但是总的感觉就是跳表和红黑树其实没差别，说用这个为什么不用那个，感觉有点牵强，你要说用，那么也不是不可以用。&lt;/p&gt;
+&lt;h3 id=&#34;跳表和b树&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#跳表和b树&#34;&gt;#&lt;/a&gt; 跳表和 B + 树&lt;/h3&gt;
+&lt;p&gt;也就是 redis 用了跳表，个人感觉，zset 他是要做范围查找的，那么就需要和 B + 树做个横向对比。&lt;br&gt;
+B + 树首先实现肯定较为复杂（当然网上也有说你用跳表，那么也要和随机平衡树的实现作比较，，麻），其次我觉得最主要的就是 B + 树和跳表都可以做范围查找，其次两者都是有索引节点，也就是上面的节点都是额外增加的，仅用来索引，所以跳表的可变的参数就有优势了，那么选定搁 n 个抽取，那么就可以适当减少空间的占用。&lt;/p&gt;
+&lt;h3 id=&#34;总结&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#总结&#34;&gt;#&lt;/a&gt; 总结&lt;/h3&gt;
+&lt;p&gt;感觉没什么好说的，网上的说法也是没有一点说服力，我也没有去查阅官方的文档（一个没兴趣，二个估计看了也是云里雾里），so，问到就说点自己的想法，爱谁谁。&lt;/p&gt;
+</content>
+        <category term="数据结构" />
+        <updated>2023-09-26T13:03:51.000Z</updated>
+    </entry>
+    <entry>
+        <id>http://example.com/2023/09/25/%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/</id>
+        <title>事务的隔离性</title>
+        <link rel="alternate" href="http://example.com/2023/09/25/%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;一直有种面对隔离级别的恐惧，这次看懂了，稍做记录&lt;/p&gt;
+&lt;h3 id=&#34;基本概念&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#基本概念&#34;&gt;#&lt;/a&gt; 基本概念&lt;/h3&gt;
+&lt;p&gt;如果是单线程，那么完全不会出现什么问题。直到多线程的出现，就引发了一些列的问题：脏读，不可重复读，幻读。简单解释一下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;脏读：一个事务读取到了另一个没有提交事务修改过的数据&lt;/li&gt;
+&lt;li&gt;不可重复读：一个事务内，两次读取到的同一数据的内容不一样&lt;/li&gt;
+&lt;li&gt;幻读：一个事务内，查询符合条件的记录数，两次读到的记录数不一样&lt;br&gt;
+以上的严重性，就是由上到下递减。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;与之对应的有几个隔离级别：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;读未提交&lt;/li&gt;
+&lt;li&gt;读已提交&lt;/li&gt;
+&lt;li&gt;可重复读&lt;/li&gt;
+&lt;li&gt;串行&lt;br&gt;
+ innodb 存储引擎，默认的隔离级别是可重复读。&lt;br&gt;
+简单点来说的话就是，读未提交就是读最新数据；读已提交就是可以读到其他事务提交的内容；可重复读就是可以重复读取相同的数据；串行，就是事务挨着事务，加锁了。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;read-view和隐藏字段&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#read-view和隐藏字段&#34;&gt;#&lt;/a&gt; Read view 和隐藏字段&lt;/h3&gt;
+&lt;p&gt;一条记录有两个隐藏字段：trx_id 和 roll_pointer；分别表示最新修改的事务的 id 和指向 undo_log 中的日志指针。&lt;/p&gt;
+&lt;p&gt;read view 说白了就是有关事务 id 的一种数据结构，这里面的主要结构就是四个字段：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;min_trx_id：当前存在的 id 最小的事务（注：事务的 id 是自增长的）&lt;/li&gt;
+&lt;li&gt;max_trx_id：下一个事务 id&lt;/li&gt;
+&lt;li&gt;m_ids：当前存在的事务 id 列表&lt;/li&gt;
+&lt;li&gt;creator_trx_id：创建的事务 id&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;mvcc多版本并发控制实现&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#mvcc多版本并发控制实现&#34;&gt;#&lt;/a&gt; mvcc（多版本并发控制）实现&lt;/h3&gt;
+&lt;p&gt;感觉也没什么高深的，看了才知道就是利用上面的字段来完成的，也就是要明白一些规则。&lt;br&gt;
+注意：这边我刚明白的一点，read view 的创建和事务没有必然的关系，也就是 read view 可以是在事务中创建，也可以在一开始创建也就对应这两种隔离级别，所以 min，max，ids 这几个字段才有了不可替代性。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对于不活跃的资源我可以改动，也就是小于 min 的。&lt;/li&gt;
+&lt;li&gt;对于未创建的我不能改动，也就是大于等于 max 的&lt;/li&gt;
+&lt;li&gt;对于之间的，也就要看在不在 ids 中了，也就是这个事务提交了没有。如果我创建 read view 的时候，他提交了，那么我就可以读了。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;看到了哪些可以读，那么就直接读，如果不可以读，就顺着 roll_pointer 链找下去，也就是找之前的记录，来完成当前的事务的隔离。&lt;/p&gt;
+</content>
+        <category term="MySQL" />
+        <updated>2023-09-25T09:44:47.000Z</updated>
+    </entry>
     <entry>
         <id>http://example.com/2023/09/22/%E7%AC%94%E8%AF%95%E9%80%89%E6%8B%A9%E9%A2%98%E9%9B%B6%E6%95%A3%E7%9F%A5%E8%AF%86%E7%82%B9-%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/</id>
         <title>笔试选择题零散知识点--持续更新</title>
@@ -21,7 +163,8 @@
 必须赋初值，然后使用，不然直接报编译错误，无法通过编译。&lt;br&gt;
 但是引用类型或者数组就不一样，对于 new 的&lt;/p&gt;
 &lt;p&gt;2、集合继承图&lt;br&gt;
-&lt;img data-src=&#34;https://pic.imgdb.cn/item/650d122ac458853aef243cba.png&#34; alt=&#34;alt&#34;&gt;&lt;/p&gt;
+&lt;img data-src=&#34;https://pic.imgdb.cn/item/650d122ac458853aef243cba.png&#34; alt=&#34;alt&#34;&gt;&lt;br&gt;
+ 这边主要是将 map 记混了，以为都是继承的 collection，然后就是有一些线程安全的集合，vector、hashtable 以及 stack 是继承的 vector&lt;/p&gt;
 </content>
         <category term="其他" />
         <updated>2023-09-22T03:28:03.000Z</updated>
@@ -253,6 +396,25 @@
 &lt;p&gt;分治思想，有点和快排类似，但是归并比快排更稳定，也就是当纯倒序，快排会退化成 O (n^2)。&lt;/p&gt;
 &lt;p&gt;这是之前写的代码，也就是一贯的风格，用 int [] 来接，并且用 split 和 merge 两个组成归并排序。&lt;/p&gt;
 &lt;p&gt;大体的思路就是不停的切，每次找 num 的 mid，切开；left 到 mid，mid+1 到 right；也很简单，split 不用说了，就是找 mid，切开；merge 的话就是合并两个有序的数组，很简单。&lt;/p&gt;
+&lt;h3 id=&#34;基数排序&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#基数排序&#34;&gt;#&lt;/a&gt; 基数排序&lt;/h3&gt;
+&lt;p&gt;简单说一下，并没有细看&lt;br&gt;
+说使用的桶思想，每一轮使得每一位有序。&lt;/p&gt;
+&lt;h3 id=&#34;稳定性&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#稳定性&#34;&gt;#&lt;/a&gt; 稳定性&lt;/h3&gt;
+&lt;p&gt;这边讲一下稳定性，稳定性的意思并不是最好和最坏的时间复杂度一样，而是对于相同的两个元素，排完序后他们的相对位置总是保持不变的。&lt;br&gt;
+所以基于上面的定义，那么稳定的排序算法不会改变相同元素的相对位置。直接给结论，不稳定的排序算法有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;快排，sentinel 的选择&lt;/li&gt;
+&lt;li&gt;选择&lt;/li&gt;
+&lt;li&gt;堆&lt;/li&gt;
+&lt;li&gt;希尔&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;空间复杂度&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#空间复杂度&#34;&gt;#&lt;/a&gt; 空间复杂度&lt;/h3&gt;
+&lt;p&gt;也没有细看，目前就直接记不是 O (1) 的算法：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;快排&lt;/li&gt;
+&lt;li&gt;归并&lt;/li&gt;
+&lt;li&gt;基数、桶、计数（三个桶都是 n+k）&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h3 id=&#34;总结&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#总结&#34;&gt;#&lt;/a&gt; 总结&lt;/h3&gt;
 &lt;p&gt;以上就是我接触的常见的排序了，感觉也是了结了一个心事。其中常写的就是快排和归并，总结一下就是很简单，也就这两个我贴的我自己的代码风格。&lt;/p&gt;
 &lt;p&gt;欧凯，结束，排序了结，希望手撕到这种题目的时候我可以秒斯，yes&lt;/p&gt;

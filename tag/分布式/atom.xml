@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>http://example.com</id>
+    <title>该死的秋招 • Posts by &#34;分布式&#34; tag</title>
+    <link href="http://example.com" />
+    <updated>2023-09-28T07:06:03.000Z</updated>
+    <category term="hello blog" />
+    <category term="设计模式" />
+    <category term="MySQL" />
+    <category term="算法" />
+    <category term="Redis" />
+    <category term="其他" />
+    <category term="分布式" />
+    <category term="数据结构" />
+    <entry>
+        <id>http://example.com/2023/09/28/%E5%B9%82%E7%AD%89%E5%AE%9E%E7%8E%B0/</id>
+        <title>幂等实现</title>
+        <link rel="alternate" href="http://example.com/2023/09/28/%E5%B9%82%E7%AD%89%E5%AE%9E%E7%8E%B0/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;关于幂等的实现，属于是一个高频的面试题吧，所以直接做一个记录，其实这是很大的一块&lt;/p&gt;
+&lt;h3 id=&#34;定义&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#定义&#34;&gt;#&lt;/a&gt; 定义&lt;/h3&gt;
+&lt;p&gt;幂等原先用于数学领域，转到计算机就是接口幂等，那么也就是多次请求效果和一次一样。&lt;/p&gt;
+&lt;h3 id=&#34;产生的背景&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#产生的背景&#34;&gt;#&lt;/a&gt; 产生的背景&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;恶意&lt;/li&gt;
+&lt;li&gt;客户端重复提交，也就是 button 的问题，表单重复提交&lt;/li&gt;
+&lt;li&gt;超时重试，这个背景包括前后端连接超时，前端等待后端结果超时，主要是后者&lt;/li&gt;
+&lt;li&gt;重复消费，感觉有点勉强（可说可不说吧，主要是没有用到 mq）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;引入幂等的后果&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#引入幂等的后果&#34;&gt;#&lt;/a&gt; 引入幂等的后果&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;增加后端处理逻辑，因为要判重等&lt;/li&gt;
+&lt;li&gt;将并行改为串行，简单点说就是直接通过单通道限制资源&lt;br&gt;
+所以就是说建议非必要不幂等，感觉也就是一些支付啊什么的需要幂等，要么就直接限制前端就行了。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;幂等的实现方案&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#幂等的实现方案&#34;&gt;#&lt;/a&gt; 幂等的实现方案&lt;/h3&gt;
+&lt;p&gt;感觉总的可以分为这样几大类：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;insert，也就是有唯一主键来做约束，交给数据库，落库就主键冲突&lt;/li&gt;
+&lt;li&gt;update，这个时候就涉及到锁了，乐观，悲观以及分布式锁&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;insert操作&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#insert操作&#34;&gt;#&lt;/a&gt; insert 操作&lt;/h4&gt;
+&lt;p&gt;通过主键给个防重表，如果重复了，那么返回成功，否则就执行。&lt;br&gt;
+网上有个说法：对于并发大的使用 select 再 insert（这边就要加锁了，因为是两个步骤），对于并发不大的直接使用 insert；个人觉得没什么道理，后面再看。&lt;/p&gt;
+&lt;p&gt;使用防重表，主要是为了实现业务和判重分离，其实直接用业务表的主键也是可以的。&lt;/p&gt;
+&lt;h3 id=&#34;update&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#update&#34;&gt;#&lt;/a&gt; update&lt;/h3&gt;
+&lt;h4 id=&#34;token&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#token&#34;&gt;#&lt;/a&gt; token&lt;/h4&gt;
+&lt;p&gt;token，借助 redis；客户端发送请求，服务端给出唯一 token，先落库 redis 还是先给客户端，感觉有说法；然后客户端携带着 token 来第二次请求，请求成功那么执行并删除 token；否则幂等，直接返回。&lt;/p&gt;
+&lt;p&gt;token 建议用雪花算法，也就是时间戳 41 位 + 主机 + 随机&lt;/p&gt;
+&lt;h4 id=&#34;上锁&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#上锁&#34;&gt;#&lt;/a&gt; 上锁&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;悲观锁，select for update&lt;/li&gt;
+&lt;li&gt;乐观锁，加入自增版本号，用 cas 也就是携带着版本号进行 insert；也就是先 select 获取版本号，然后 insert&lt;/li&gt;
+&lt;li&gt;分布式锁，可以使用 zookeeper 和 redis，具体的使用感觉有点儿麻烦，目前不是很会，大致的就是获取到分布式锁了就执行，否则直接返回。&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+        <category term="分布式" />
+        <updated>2023-09-28T07:06:03.000Z</updated>
+    </entry>
+</feed>
