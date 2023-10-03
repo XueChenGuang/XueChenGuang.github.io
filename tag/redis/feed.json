@@ -5,6 +5,16 @@
     "home_page_url": "http://example.com",
     "items": [
         {
+            "id": "http://example.com/2023/10/03/Redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96/",
+            "url": "http://example.com/2023/10/03/Redis%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96/",
+            "title": "Redis的持久化",
+            "date_published": "2023-10-03T05:35:20.000Z",
+            "content_html": "<h3 id=\"写在前面\"><a class=\"markdownIt-Anchor\" href=\"#写在前面\">#</a> 写在前面</h3>\n<p>关于面试，我觉得持久化这边可以问的点还是挺多的，总的来说就是两个方法 AOF+RDB；然后两者中和，具体怎么中和的可以问，然后流程，涉及到写时复制以及调用 fsync，fork 创建子进程而产生的主线程页表复制等等</p>\n<h3 id=\"aof\"><a class=\"markdownIt-Anchor\" href=\"#aof\">#</a> AOF</h3>\n",
+            "tags": [
+                "Redis"
+            ]
+        },
+        {
             "id": "http://example.com/2023/09/20/Redis%E7%BC%93%E5%AD%98/",
             "url": "http://example.com/2023/09/20/Redis%E7%BC%93%E5%AD%98/",
             "title": "Redis缓存",
