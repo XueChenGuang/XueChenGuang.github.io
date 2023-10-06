@@ -12,6 +12,9 @@
     <category term="其他" />
     <category term="分布式" />
     <category term="数据结构" />
+    <category term="Spring" />
+    <category term="Thread" />
+    <category term="Java" />
     <entry>
         <id>http://example.com/2023/09/28/%E5%B9%82%E7%AD%89%E5%AE%9E%E7%8E%B0/</id>
         <title>幂等实现</title>
@@ -29,29 +32,32 @@
 &lt;/ul&gt;
 &lt;h3 id=&#34;引入幂等的后果&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#引入幂等的后果&#34;&gt;#&lt;/a&gt; 引入幂等的后果&lt;/h3&gt;
 &lt;ul&gt;
-&lt;li&gt;增加后端处理逻辑，因为要判重等&lt;/li&gt;
+&lt;li&gt;增加后端处理逻辑&lt;/li&gt;
 &lt;li&gt;将并行改为串行，简单点说就是直接通过单通道限制资源&lt;br&gt;
-所以就是说建议非必要不幂等，感觉也就是一些支付啊什么的需要幂等，要么就直接限制前端就行了。&lt;/li&gt;
+所以就是说建议非必要不幂等&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;幂等的实现方案&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#幂等的实现方案&#34;&gt;#&lt;/a&gt; 幂等的实现方案&lt;/h3&gt;
-&lt;p&gt;感觉总的可以分为这样几大类：&lt;/p&gt;
+&lt;p&gt;感觉总的可以分为两大类：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;insert，也就是有唯一主键来做约束，交给数据库，落库就主键冲突&lt;/li&gt;
-&lt;li&gt;update，这个时候就涉及到锁了，乐观，悲观以及分布式锁&lt;/li&gt;
+&lt;li&gt;前端幂等，也叫做接口幂等，通过限制表单或者按钮，或者引入 token&lt;/li&gt;
+&lt;li&gt;后端幂等，也叫做服务幂等，主要是和数据库打交道，也就是落库幂等&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h4 id=&#34;insert操作&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#insert操作&#34;&gt;#&lt;/a&gt; insert 操作&lt;/h4&gt;
-&lt;p&gt;通过主键给个防重表，如果重复了，那么返回成功，否则就执行。&lt;br&gt;
+&lt;h4 id=&#34;接口幂等&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#接口幂等&#34;&gt;#&lt;/a&gt; 接口幂等&lt;/h4&gt;
+&lt;p&gt;其一，限制表单提交，通过前端限制按钮的重复点击；但是这样的缺点就是可以通过跳过前端直接发起服务器请求来造成恶意破坏。&lt;/p&gt;
+&lt;p&gt;其二，PRG，也就是提交表单之后进行页面跳转，防止重复提交并且防止浏览器回退操作&lt;/p&gt;
+&lt;p&gt;其三，token，借助 redis；客户端发送请求，服务端给出唯一 token，先落库 redis 还是先给客户端，感觉有说法；然后客户端携带着 token 来第二次请求，请求成功那么执行并删除 token；否则幂等，直接返回。&lt;/p&gt;
+&lt;p&gt;建议是先删 token，这样出现的问题就是删除了 token 但是这个时候处理的时候出错了，导致 token 被删了并且业务还没有执行，导致第二个请求进来也处理不了。那么这样是符合幂等场景的，也就是直接出错了，所以重新生成 token，再次请求即可。&lt;br&gt;
+如果先给请求再删 token 的话，如果 token 还没被删掉，第二个请求打进来了，那么就会导致重复请求，有违幂等，除了加上原子操作，那么就是上锁了影响效率。&lt;/p&gt;
+&lt;p&gt;token 建议用雪花算法，也就是时间戳 41 位 + 主机 + 随机&lt;/p&gt;
+&lt;h4 id=&#34;服务幂等&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#服务幂等&#34;&gt;#&lt;/a&gt; 服务幂等&lt;/h4&gt;
+&lt;p&gt;其一，防重表，通过主键给个防重表，如果重复了，那么返回成功，否则就执行。&lt;br&gt;
 网上有个说法：对于并发大的使用 select 再 insert（这边就要加锁了，因为是两个步骤），对于并发不大的直接使用 insert；个人觉得没什么道理，后面再看。&lt;/p&gt;
 &lt;p&gt;使用防重表，主要是为了实现业务和判重分离，其实直接用业务表的主键也是可以的。&lt;/p&gt;
-&lt;h3 id=&#34;update&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#update&#34;&gt;#&lt;/a&gt; update&lt;/h3&gt;
-&lt;h4 id=&#34;token&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#token&#34;&gt;#&lt;/a&gt; token&lt;/h4&gt;
-&lt;p&gt;token，借助 redis；客户端发送请求，服务端给出唯一 token，先落库 redis 还是先给客户端，感觉有说法；然后客户端携带着 token 来第二次请求，请求成功那么执行并删除 token；否则幂等，直接返回。&lt;/p&gt;
-&lt;p&gt;token 建议用雪花算法，也就是时间戳 41 位 + 主机 + 随机&lt;/p&gt;
-&lt;h4 id=&#34;上锁&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#上锁&#34;&gt;#&lt;/a&gt; 上锁&lt;/h4&gt;
+&lt;p&gt;其二，上锁，上锁就有很多的情况，比如通过 mysql、zookeeper、redis 实现分布式锁，mysql 可以乐观悲观锁&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;悲观锁，select for update&lt;/li&gt;
 &lt;li&gt;乐观锁，加入自增版本号，用 cas 也就是携带着版本号进行 insert；也就是先 select 获取版本号，然后 insert&lt;/li&gt;
-&lt;li&gt;分布式锁，可以使用 zookeeper 和 redis，具体的使用感觉有点儿麻烦，目前不是很会，大致的就是获取到分布式锁了就执行，否则直接返回。&lt;/li&gt;
+&lt;li&gt;分布式锁，可以使用 zookeeper 和 redis。至于 redis 的分布式锁式如何实现的，通过借助 setNX，老版本的 redis 是这样的，目前的 redis 直接通过 set 操作即可，分布式锁上锁过程是原子的，解锁也要保证原子，所以要通过 lua 脚本完成删锁的操作。不然就会造成 expire key 过期，然后误删其他客户端刚创建的分布式锁。&lt;/li&gt;
 &lt;/ul&gt;
 </content>
         <category term="分布式" />

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>http://example.com</id>
+    <title>该死的秋招 • Posts by &#34;thread&#34; tag</title>
+    <link href="http://example.com" />
+    <updated>2023-10-06T09:45:00.000Z</updated>
+    <category term="hello blog" />
+    <category term="设计模式" />
+    <category term="MySQL" />
+    <category term="算法" />
+    <category term="Redis" />
+    <category term="其他" />
+    <category term="分布式" />
+    <category term="数据结构" />
+    <category term="Spring" />
+    <category term="Thread" />
+    <category term="Java" />
+    <entry>
+        <id>http://example.com/2023/10/06/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</id>
+        <title>生命周期</title>
+        <link rel="alternate" href="http://example.com/2023/10/06/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;这篇主要写明白会问到的生命周期，对于 Java 中常用到的，也就线程和 Bean 了，那么这两个的声明周期是什么呢，经常有这个疑问，但是没有很明确的记得，这就会在面试的时候卡壳。&lt;/p&gt;
+&lt;h3 id=&#34;bean的生命周期&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#bean的生命周期&#34;&gt;#&lt;/a&gt; Bean 的生命周期&lt;/h3&gt;
+&lt;h3 id=&#34;thread的生命周期&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#thread的生命周期&#34;&gt;#&lt;/a&gt; Thread 的生命周期&lt;/h3&gt;
+</content>
+        <category term="Spring" />
+        <category term="Thread" />
+        <updated>2023-10-06T09:45:00.000Z</updated>
+    </entry>
+</feed>

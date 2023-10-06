@@ -12,6 +12,9 @@
     <category term="其他" />
     <category term="分布式" />
     <category term="数据结构" />
+    <category term="Spring" />
+    <category term="Thread" />
+    <category term="Java" />
     <entry>
         <id>http://example.com/2023/09/25/%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/</id>
         <title>事务的隔离性</title>

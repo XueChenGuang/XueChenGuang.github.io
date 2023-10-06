@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>该死的秋招 • Posts by &#34;thread&#34; tag</title>
+        <link>http://example.com</link>
+        <description>孵化中···</description>
+        <language>zh-CN</language>
+        <pubDate>Fri, 06 Oct 2023 17:45:00 +0800</pubDate>
+        <lastBuildDate>Fri, 06 Oct 2023 17:45:00 +0800</lastBuildDate>
+        <category>hello blog</category>
+        <category>设计模式</category>
+        <category>MySQL</category>
+        <category>算法</category>
+        <category>Redis</category>
+        <category>其他</category>
+        <category>分布式</category>
+        <category>数据结构</category>
+        <category>Spring</category>
+        <category>Thread</category>
+        <category>Java</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2023/10/06/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</guid>
+            <title>生命周期</title>
+            <link>http://example.com/2023/10/06/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</link>
+            <category>Spring</category>
+            <category>Thread</category>
+            <pubDate>Fri, 06 Oct 2023 17:45:00 +0800</pubDate>
+            <description><![CDATA[ &lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;这篇主要写明白会问到的生命周期，对于 Java 中常用到的，也就线程和 Bean 了，那么这两个的声明周期是什么呢，经常有这个疑问，但是没有很明确的记得，这就会在面试的时候卡壳。&lt;/p&gt;
+&lt;h3 id=&#34;bean的生命周期&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#bean的生命周期&#34;&gt;#&lt;/a&gt; Bean 的生命周期&lt;/h3&gt;
+&lt;h3 id=&#34;thread的生命周期&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#thread的生命周期&#34;&gt;#&lt;/a&gt; Thread 的生命周期&lt;/h3&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>
