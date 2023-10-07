@@ -56,16 +56,50 @@
 &lt;li&gt;构造函数中的循环依赖，因为三级缓存生效是在实例化之后，所以如果第一步就存在循环依赖，那么是无法解决的。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;对于以上两个场景，都是用延迟加载即可，@lazy 注解，具体的原理目前不是很清楚&lt;/p&gt;
+&lt;h3 id=&#34;aop&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#aop&#34;&gt;#&lt;/a&gt; AOP&lt;/h3&gt;
+&lt;p&gt;AOP 也就是切面编程，底层原理使用的是动态代理，说到底还是反射机制&lt;/p&gt;
 </content>
         <category term="Spring" />
         <updated>2023-10-07T03:59:35.000Z</updated>
     </entry>
     <entry>
-        <id>http://example.com/2023/10/06/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</id>
-        <title>生命周期</title>
-        <link rel="alternate" href="http://example.com/2023/10/06/%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"/>
+        <id>http://example.com/2023/10/06/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%E3%80%81bean%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E3%80%81thread%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/</id>
+        <title>类加载机制、bean生命周期、thread生命周期</title>
+        <link rel="alternate" href="http://example.com/2023/10/06/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6%E3%80%81bean%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E3%80%81thread%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/"/>
         <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
-&lt;p&gt;这篇主要写明白会问到的生命周期，对于 Java 中常用到的，也就线程和 Bean 了，那么这两个的声明周期是什么呢，经常有这个疑问，但是没有很明确的记得，这就会在面试的时候卡壳。&lt;/p&gt;
+&lt;p&gt;原先是只打算写生命周期的，但是看到 bean 的生命周期的时候就联想到了类加载机制，其也有一套跟 bean 很像的生命周期&lt;/p&gt;
+&lt;h3 id=&#34;类加载机制&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#类加载机制&#34;&gt;#&lt;/a&gt; 类加载机制&lt;/h3&gt;
+&lt;p&gt;直接上图&lt;br&gt;
+&lt;img data-src=&#34;https://pic.imgdb.cn/item/6521506bc458853aef6c916d.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;加载也就是加载 class 文件，然后将 class 文件解析成 java 类存放在内存中，包括方法区和栈&lt;/p&gt;
+&lt;p&gt;这边说一下方法区，方法区是抽象的概念，1.8 之前的实现是永久代，后面转为原空间了；对于常量池、静态变量等之前存在方法区中，现在存放在堆中&lt;/p&gt;
+&lt;p&gt;具体说一下连接阶段干的事：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;验证：加载之后验证一些错误，文件类型，元数据，字节码等等&lt;/li&gt;
+&lt;li&gt;准备：主要是给静态变量赋零值&lt;/li&gt;
+&lt;li&gt;解析：将符号引用转为直接引用，主要分为静态解析和动态解析，使用 string 来标记引用的类，如果是静态解析，那么在运行时就直接使用地址进行替换 s；如果涉及到多态的话，就是动态解析了，那么会在具体调用的时候才进行 s 的替换&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;对于初始化，就是对静态资源和成员变量进行赋值，并不涉及到构造函数&lt;/p&gt;
+&lt;p&gt;玛德感觉不是很懂，很牵强，后面再说&lt;/p&gt;
+&lt;h3 id=&#34;类加载器&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#类加载器&#34;&gt;#&lt;/a&gt; 类加载器&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://pic.imgdb.cn/item/652164e8c458853aef77e771.jpg&#34; alt=&#34;&#34;&gt;&lt;br&gt;
+类加载器负责的就是将 class 文件装进虚拟机，主要有三类加载器&lt;br&gt;
+ bootstrap、ext、以及 system（application） classloader&lt;/p&gt;
+&lt;p&gt;说一下这三个负责加载的类：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;bootstrap 负责加载 jre/jre-bin 下面的核心类&lt;/li&gt;
+&lt;li&gt;ext 负责加载 jre-bin-ext 下面的扩展类&lt;/li&gt;
+&lt;li&gt;system 或者说 app 负责加载我们写的 java 类&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这里说一下如何判断两个类不一样&lt;br&gt;
+首先，全限定名称不同；其次，要被不同的类加载器加载。因为每个类加载器都有自己的命名空间，所以不同加载了那么就是不同，即使全名相同。&lt;/p&gt;
+&lt;p&gt;所以出现了双亲委派机制，具体的实现也就是 loadClass 这个方法实现的，如果我们自定义类加载器，也就是继承 classLoader 后，重写 loadClass 方法，那么就会破坏双亲委派机制，可以直接指定我们的自定义 loader 去加载指定的类，但是对于 java 核心的类库是不行的，会报错（网上这么说的，具体没试过，sun 公司对于 JVM 的保护吧）&lt;/p&gt;
+&lt;p&gt;正常的 loadClass 有几个步骤：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;查缓存，看看有没有；有的话直接加载&lt;/li&gt;
+&lt;li&gt;没有，那么交给上层，也就是双亲去加载，直到最高层也就是 bootstrap&lt;/li&gt;
+&lt;li&gt;最后调用 findClass 来加载&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h3 id=&#34;bean的生命周期&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#bean的生命周期&#34;&gt;#&lt;/a&gt; Bean 的生命周期&lt;/h3&gt;
 &lt;h3 id=&#34;thread的生命周期&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#thread的生命周期&#34;&gt;#&lt;/a&gt; Thread 的生命周期&lt;/h3&gt;
 </content>
