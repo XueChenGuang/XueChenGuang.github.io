@@ -5,6 +5,16 @@
     "home_page_url": "http://example.com",
     "items": [
         {
+            "id": "http://example.com/2023/10/10/join%E8%A1%A8%E8%BF%9E%E6%8E%A5/",
+            "url": "http://example.com/2023/10/10/join%E8%A1%A8%E8%BF%9E%E6%8E%A5/",
+            "title": "join表连接",
+            "date_published": "2023-10-10T12:35:52.000Z",
+            "content_html": "<h3 id=\"写在前面\"><a class=\"markdownIt-Anchor\" href=\"#写在前面\">#</a> 写在前面</h3>\n<p>表连接，一直就会用个 left join</p>\n<h3 id=\"一张图搞定\"><a class=\"markdownIt-Anchor\" href=\"#一张图搞定\">#</a> 一张图搞定</h3>\n<p><img data-src=\"https://pic.imgdb.cn/item/6525450ac458853aefb43c95.jpg\" alt=\"\"></p>\n",
+            "tags": [
+                "MySQL"
+            ]
+        },
+        {
             "id": "http://example.com/2023/09/25/%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/",
             "url": "http://example.com/2023/09/25/%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E6%80%A7/",
             "title": "事务的隔离性",

@@ -18,6 +18,10 @@
         <category>Spring</category>
         <category>Thread</category>
         <category>Java</category>
+        <category>JDK</category>
+        <category>SQL</category>
+        <category>JVM</category>
+        <category>多线程</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/10/07/IOC%E5%92%8CAOP/</guid>
             <title>IOC和AOP</title>
@@ -106,7 +110,23 @@
 &lt;li&gt;没有，那么交给上层，也就是双亲去加载，直到最高层也就是 bootstrap&lt;/li&gt;
 &lt;li&gt;最后调用 findClass 来加载&lt;/li&gt;
 &lt;/ul&gt;
+&lt;h4 id=&#34;破坏双亲委派机制&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#破坏双亲委派机制&#34;&gt;#&lt;/a&gt; 破坏双亲委派机制&lt;/h4&gt;
+&lt;p&gt;常见的破坏双亲委派机制的场景，常见的有两个：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;热部署，也就是通过直接加载最新的类，完成热部署，但是这个类名是完全相同的，所以要完成类的加载，那么就需要使用不同的类加载器，所以破坏了唯一加载的原则&lt;/li&gt;
+&lt;li&gt;SPI 的实现如 JDBC，也就是核心类需要依靠外部类的情况，典型的就是数据库的加载，不同的厂商依据同一套规则给出不同的实现，那么类加载的时候，到上层 bootstrap 只能加载核心的类，但是核心类依赖外部类的实现（也就是 classpath 下的类），那么这个时候就直接调用线程上下文类加载器完成类的加载。  PS：这边讲一下为什么用线程上下文而不是用 system 直接指定，因为不同的部署环境，他们的类加载器不同，比如 web 等，用的不一定是 system，那么使用线程动态获取，是最合适的。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这篇讲的很好&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2phdmF6ZWppYW4vYXJ0aWNsZS9kZXRhaWxzLzczNDEzMjky&#34;&gt; https://blog.csdn.net/javazejian/article/details/73413292&lt;/span&gt;&lt;/p&gt;
 &lt;h3 id=&#34;bean的生命周期&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#bean的生命周期&#34;&gt;#&lt;/a&gt; Bean 的生命周期&lt;/h3&gt;
+&lt;p&gt;对于 bean 的生命周期大致就可以说三个，&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;实例化&lt;/li&gt;
+&lt;li&gt;填充属性&lt;/li&gt;
+&lt;li&gt;初始化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;主要的流程感觉就是加载 xml 或者是注解，然后调用 beanDefinition 反射创建 bean，属性填充，初始化，使用，销毁等等一系列的&lt;/p&gt;
+&lt;p&gt;其中涉及到 bean 如果继承了某些类的话，就可以使用钩子来在固定的节点加入一些自定义的处理。例如 aware 就是在属性填充之后，还可以继承 BeanPostProcessor 来在初始化前后进行一些处理&lt;/p&gt;
+&lt;p&gt;感觉也就这么多，这边就会涉及到循环依赖吧，按照网上的说法，bean 的实例化包含了 JVM 的一系列过程，感觉是这么回事，，，。&lt;/p&gt;
 &lt;h3 id=&#34;thread的生命周期&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#thread的生命周期&#34;&gt;#&lt;/a&gt; Thread 的生命周期&lt;/h3&gt;
  ]]></description>
         </item>

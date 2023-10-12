@@ -15,6 +15,10 @@
     <category term="Spring" />
     <category term="Thread" />
     <category term="Java" />
+    <category term="JDK" />
+    <category term="SQL" />
+    <category term="JVM" />
+    <category term="多线程" />
     <entry>
         <id>http://example.com/2023/09/20/UF%E5%92%8CKruskal/</id>
         <title>UF和Kruskal</title>

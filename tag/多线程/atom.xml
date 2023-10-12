@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>http://example.com</id>
+    <title>该死的秋招 • Posts by &#34;多线程&#34; tag</title>
+    <link href="http://example.com" />
+    <updated>2023-10-11T03:49:38.000Z</updated>
+    <category term="hello blog" />
+    <category term="设计模式" />
+    <category term="MySQL" />
+    <category term="算法" />
+    <category term="Redis" />
+    <category term="其他" />
+    <category term="分布式" />
+    <category term="数据结构" />
+    <category term="Spring" />
+    <category term="Thread" />
+    <category term="Java" />
+    <category term="JDK" />
+    <category term="SQL" />
+    <category term="JVM" />
+    <category term="多线程" />
+    <entry>
+        <id>http://example.com/2023/10/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E5%A4%A7%E7%89%B9%E6%80%A7/</id>
+        <title>多线程的三大特性</title>
+        <link rel="alternate" href="http://example.com/2023/10/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E5%A4%A7%E7%89%B9%E6%80%A7/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;深信服面试的时候，面到了多线程的三大特性，虽然多线程这块比较熟悉，但是概念没有对应上，在面试官友好的提示下说了出来，但回想一下确实是自己还没有完全搞明白，不然怎么会对应不上这个简单的概念呢，话不多说，直接开始&lt;/p&gt;
+&lt;h3 id=&#34;多线程的三大特性&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#多线程的三大特性&#34;&gt;#&lt;/a&gt; 多线程的三大特性&lt;/h3&gt;
+&lt;p&gt;并不是说起个多线程就一定满足三大特性，只是不满足三大特性会有很多的线程安全问题，那么要消除线程安全，就需要选择性的满足这三大特性，所以其中的点还是蛮灵活的。&lt;/p&gt;
+&lt;p&gt;网上都是按照可见性，原子性，顺序性来讲；但是其实这三点并不能完全分隔，只能说概念上可以分割一下&lt;/p&gt;
+&lt;p&gt;我起初了解并意识到三大特性的时间还是在了解内存模型的时候，从硬件到 JVM 的内存模型，有个映射关系，具体直接看图&lt;br&gt;
+&lt;img data-src=&#34;https://pic.imgdb.cn/item/65261d4dc458853aef2d8210.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这边也有一个可以说的点，我就说的长一点好了：&lt;br&gt;
+CPU 的处理速度和内存的读写速度差距过大，所以在 CPU 和内存之间加入了 CPU 寄存器和 CPU 缓存来提高效率，也就是 SRAM 和 DRAM 的来源了。&lt;/p&gt;
+&lt;p&gt;这样的结构对于单线程来说，也就是单核 CPU 来说是完全没问题的。但是多核的发展，给这样的模型带来了困扰，也就是经典的缓存不一致问题，也就是可以想象为数据共享，但是主存中才是真正的共享数据，缓存中是数据副本，所以造成了不一致，因而后面出现了缓存一致性协议，直白点说就是涉及到了同步问题。因而就会出现对于耗时长的指令会到之后面的指令暂停，所以就出现了指令重排序。所谓的指令重拍，并不是乱排，而是让不相干的指令可以不用等待而提前执行。&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://pic.imgdb.cn/item/65261f17c458853aef33887e.jpg&#34; alt=&#34;&#34;&gt;&lt;br&gt;
+这个是线程的执行逻辑，其中与主存打交道交给 JMM 控制，那么具体的映射关系是 thread 中用到的 threadstack 大多存放在缓存中，但是对于 heap 大多存放在主存中，所以对于下层的屏蔽，我们只需要和 threadstack 以及 heap 打交道，而不必与硬件打交道。线程中也是用到了工作内存和主存，感觉和 CPU 缓存以及主存差不多。&lt;/p&gt;
+&lt;p&gt;有了上面的内存结构，那么就出现了下面的线程三大特性了：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;可见性，由于内存模型的问题，大致可以分为主存和工作内存，所以多线程工作的时候，对于工作内存中的变量（主存副本），存在不一致的情况。要保证可见那么可以通过 volatile 标记或者 synchronized 关键字或者 lock 来实现。简单说一下加锁和 volatile 的区别，volatile 强制更改后刷新到主存，并且读取 volatile 变量的时候强制从主存中读取。对于加锁而言，修改之后提交到主存，读取的时候需要删除工作内存中的数据，然后从主存中进行读取（其中涉及到了内存 lock 和 unlock 指令）&lt;/li&gt;
+&lt;li&gt;原子性，一组要么成功要么失败&lt;/li&gt;
+&lt;li&gt;顺序性，主要是要讲一下 happends before 原则。涉及三点主要，实际上跟多，单线程中的总式顺序的，也就是无论指令如何重排，结果肯定与顺序读取的代码是一致的结果；加锁，同一个锁的加锁肯定在解锁之前；volatile 前面的肯定先于后面的&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+        <category term="多线程" />
+        <updated>2023-10-11T03:49:38.000Z</updated>
+    </entry>
+</feed>

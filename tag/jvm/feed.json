@@ -1,0 +1,18 @@
+{
+    "version": "https://jsonfeed.org/version/1",
+    "title": "该死的秋招 • All posts by \"jvm\" tag",
+    "description": "孵化中···",
+    "home_page_url": "http://example.com",
+    "items": [
+        {
+            "id": "http://example.com/2023/10/10/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8GC/",
+            "url": "http://example.com/2023/10/10/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8GC/",
+            "title": "垃圾回收器GC",
+            "date_published": "2023-10-10T02:14:11.000Z",
+            "content_html": "<h3 id=\"写在前面\"><a class=\"markdownIt-Anchor\" href=\"#写在前面\">#</a> 写在前面</h3>\n<p>对于垃圾回收一直是经常碰到，但是基本没系统了解过的点，这段时间其他的点基本解决，系统学习了一下 GC，也不算很底层，这篇博客写的很好<span class=\"exturl\" data-url=\"aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC8yNTUzOTY5MA==\"> https://zhuanlan.zhihu.com/p/25539690</span></p>\n<h3 id=\"聊一下jvm内存模型\"><a class=\"markdownIt-Anchor\" href=\"#聊一下jvm内存模型\">#</a> 聊一下 JVM 内存模型</h3>\n<p>经典的图<br>\n<img data-src=\"https://pic.imgdb.cn/item/65277181c458853aefbbade5.jpg\" alt=\"\"></p>\n<p>这个是使用元空间替代永久代来作为方法区的实现<br>\n<img data-src=\"https://pic.imgdb.cn/item/652771a3c458853aefbbb19a.jpg\" alt=\"\"><br>\n所以这里也来聊聊我不懂的点，元空间，为什么要用元空间；我觉得既然选择淘汰掉永久代，一定是之前有弊端，后面想出了较为优秀的替代方案。<br>\n感觉主要的就一个点：<br>\n永久代和堆的空间在物理内存上是连续的，也就是说他们仅仅是逻辑上的区分；但是元空间使用本地内存，也就是说当本地内存不超的时候就不会出现 oom。原先的永久代对于类加载过多会导致 oom</p>\n<p>对于永久代中的字符串常量池和静态变量都转移到了堆中<br>\n<img data-src=\"https://pic.imgdb.cn/item/6527d219c458853aef091689.jpg\" alt=\"\"></p>\n",
+            "tags": [
+                "JVM"
+            ]
+        }
+    ]
+}

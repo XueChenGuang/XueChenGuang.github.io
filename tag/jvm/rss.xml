@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>该死的秋招 • Posts by &#34;jvm&#34; tag</title>
+        <link>http://example.com</link>
+        <description>孵化中···</description>
+        <language>zh-CN</language>
+        <pubDate>Tue, 10 Oct 2023 10:14:11 +0800</pubDate>
+        <lastBuildDate>Tue, 10 Oct 2023 10:14:11 +0800</lastBuildDate>
+        <category>hello blog</category>
+        <category>设计模式</category>
+        <category>MySQL</category>
+        <category>算法</category>
+        <category>Redis</category>
+        <category>其他</category>
+        <category>分布式</category>
+        <category>数据结构</category>
+        <category>Spring</category>
+        <category>Thread</category>
+        <category>Java</category>
+        <category>JDK</category>
+        <category>SQL</category>
+        <category>JVM</category>
+        <category>多线程</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2023/10/10/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8GC/</guid>
+            <title>垃圾回收器GC</title>
+            <link>http://example.com/2023/10/10/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8GC/</link>
+            <category>JVM</category>
+            <pubDate>Tue, 10 Oct 2023 10:14:11 +0800</pubDate>
+            <description><![CDATA[ &lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;对于垃圾回收一直是经常碰到，但是基本没系统了解过的点，这段时间其他的点基本解决，系统学习了一下 GC，也不算很底层，这篇博客写的很好&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC8yNTUzOTY5MA==&#34;&gt; https://zhuanlan.zhihu.com/p/25539690&lt;/span&gt;&lt;/p&gt;
+&lt;h3 id=&#34;聊一下jvm内存模型&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#聊一下jvm内存模型&#34;&gt;#&lt;/a&gt; 聊一下 JVM 内存模型&lt;/h3&gt;
+&lt;p&gt;经典的图&lt;br&gt;
+&lt;img data-src=&#34;https://pic.imgdb.cn/item/65277181c458853aefbbade5.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;这个是使用元空间替代永久代来作为方法区的实现&lt;br&gt;
+&lt;img data-src=&#34;https://pic.imgdb.cn/item/652771a3c458853aefbbb19a.jpg&#34; alt=&#34;&#34;&gt;&lt;br&gt;
+所以这里也来聊聊我不懂的点，元空间，为什么要用元空间；我觉得既然选择淘汰掉永久代，一定是之前有弊端，后面想出了较为优秀的替代方案。&lt;br&gt;
+感觉主要的就一个点：&lt;br&gt;
+永久代和堆的空间在物理内存上是连续的，也就是说他们仅仅是逻辑上的区分；但是元空间使用本地内存，也就是说当本地内存不超的时候就不会出现 oom。原先的永久代对于类加载过多会导致 oom&lt;/p&gt;
+&lt;p&gt;对于永久代中的字符串常量池和静态变量都转移到了堆中&lt;br&gt;
+&lt;img data-src=&#34;https://pic.imgdb.cn/item/6527d219c458853aef091689.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>

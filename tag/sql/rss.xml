@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>该死的秋招 • Posts by &#34;sql&#34; tag</title>
+        <link>http://example.com</link>
+        <description>孵化中···</description>
+        <language>zh-CN</language>
+        <pubDate>Tue, 10 Oct 2023 20:06:45 +0800</pubDate>
+        <lastBuildDate>Tue, 10 Oct 2023 20:06:45 +0800</lastBuildDate>
+        <category>hello blog</category>
+        <category>设计模式</category>
+        <category>MySQL</category>
+        <category>算法</category>
+        <category>Redis</category>
+        <category>其他</category>
+        <category>分布式</category>
+        <category>数据结构</category>
+        <category>Spring</category>
+        <category>Thread</category>
+        <category>Java</category>
+        <category>JDK</category>
+        <category>SQL</category>
+        <category>JVM</category>
+        <category>多线程</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2023/10/10/SQL%E4%BC%98%E5%8C%96/</guid>
+            <title>SQL优化</title>
+            <link>http://example.com/2023/10/10/SQL%E4%BC%98%E5%8C%96/</link>
+            <category>SQL</category>
+            <pubDate>Tue, 10 Oct 2023 20:06:45 +0800</pubDate>
+            <description><![CDATA[ &lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;对于 sql 的优化，是一个经常会被问到的问题，有一些属于常识性的规范，除去这些的话，可以借助 explain 执行计划来查看具体的情况，从而优化 sql&lt;/p&gt;
+&lt;h3 id=&#34;优化技巧&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#优化技巧&#34;&gt;#&lt;/a&gt; 优化技巧&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;避免使用 select *，最好加上具体的字段&lt;/li&gt;
+&lt;li&gt;union 和 union all，union 涉及到了去重处理，所以如果不需要去重最好使用 union all&lt;/li&gt;
+&lt;li&gt;exist 和 in，这里体现小表驱动大表的思想，具体的就是 in 内外都可以用到索引，但是 exist 只能内部表用到索引；大表驱动小表是建立在结果集之上的，当外部表很小但是结果集很大的时候，exist 有优势；当外部表大，结果集很小的时候，in 有优势。&lt;/li&gt;
+&lt;li&gt;batchInsert 批量插入比 insert 插入多条数据要好，也就是用 sqltemplate 自带的来解决。&lt;/li&gt;
+&lt;li&gt;多用 limit&lt;/li&gt;
+&lt;li&gt;大数据量分批，对于数据同步这一块，不建议大部分全部直接取出，然后再进行后面的操作，应该使用分批小数据量查询。&lt;/li&gt;
+&lt;li&gt;alibaba 开发手册规定，join 的表不应超过三个&lt;/li&gt;
+&lt;li&gt;先缩小数据范围再接着后面的操作，比如通过 groupby 来分组，后用 having 限制；没有 where 限制之后在分组效率高（所以能用 where 就不用 having）&lt;/li&gt;
+&lt;li&gt;索引优化&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;索引优化&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#索引优化&#34;&gt;#&lt;/a&gt; 索引优化&lt;/h3&gt;
+&lt;p&gt;对于大多数的情况就是索引优化了，优化之前需要先进行判断，是没有建立索引还是索引失效了&lt;/p&gt;
+&lt;p&gt;优化的点就是调用 explain 查看执行计划&lt;br&gt;
+导致失效的几个点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;索引参与运算&lt;/li&gt;
+&lt;li&gt;隐式类型转换&lt;/li&gt;
+&lt;li&gt;字符串的 % 在前的匹配&lt;/li&gt;
+&lt;li&gt;最左匹配原则&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;可能还有更多的失效的情况，具体的还要看使用场景&lt;/p&gt;
+&lt;p&gt;还有一些情况，比如 or，可以拆分语句好建立使用索引，也就是原先使用 or 达成的效果，通过拆分并且使用 union 或者 union all 来走各自的索引&lt;/p&gt;
+&lt;p&gt;对于回表的操作，尽量可以使用覆盖索引，也就是需要的字段涵盖在索引中这是最好的&lt;/p&gt;
+&lt;p&gt;对于额外的排序，filesort 最好使用联合索引，也就是索引列和 order by 列并不相同，这也是 filesort 出现的场景，伴随着 order by 出现的&lt;/p&gt;
+&lt;p&gt;对于 group by 会出现 using temporary 的情况，创建临时表是比较耗时的，所以最好消去临时表的创建，这个时候就要对照临时表产生的情况进行优化了，具体的情况如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;如果 GROUP BY 的列没有索引，产生临时表.&lt;/li&gt;
+&lt;li&gt;如果 GROUP BY 时，SELECT 的列不止 GROUP BY 列一个，并且 GROUP BY 的列不是主键，产生临时表.&lt;/li&gt;
+&lt;li&gt;如果 GROUP BY 的列有索引，ORDER BY 的列没索引。产生临时表.&lt;/li&gt;
+&lt;li&gt;如果 GROUP BY 的列和 ORDER BY 的列不一样，即使都有索引也会产生临时表.&lt;/li&gt;
+&lt;li&gt;如果 GROUP BY 或 ORDER BY 的列不是来自 JOIN 语句第一个表。会产生临时表.&lt;/li&gt;
+&lt;li&gt;如果 DISTINCT 和 ORDER BY 的列没有索引，产生临时表.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这边补充讲一下之前对于 explain 的 type 字段的理解：&lt;br&gt;
+对于 index 这个值，说明扫描了全部的索引，比 all 稍微好一点，但是性能也很差&lt;br&gt;
+扫描局部的索引，也就是 range 稍微好一点，这个值基本是可以接受的&lt;br&gt;
+再上面就是 ref const 和 system 了&lt;/p&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>

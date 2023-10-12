@@ -18,6 +18,10 @@
         <category>Spring</category>
         <category>Thread</category>
         <category>Java</category>
+        <category>JDK</category>
+        <category>SQL</category>
+        <category>JVM</category>
+        <category>多线程</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/07/13/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87blog/</guid>
             <title>我的第一篇blog</title>

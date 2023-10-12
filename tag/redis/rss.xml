@@ -18,6 +18,10 @@
         <category>Spring</category>
         <category>Thread</category>
         <category>Java</category>
+        <category>JDK</category>
+        <category>SQL</category>
+        <category>JVM</category>
+        <category>多线程</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/10/04/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</guid>
             <title>Redis数据结构</title>
