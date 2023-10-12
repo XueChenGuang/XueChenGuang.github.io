@@ -158,8 +158,17 @@ CPU 的处理速度和内存的读写速度差距过大，所以在 CPU 和内�
 gc 有很多的类型，minor gc、major gc 和 full gc 这三种吧；但是大部分的 gc 算法并没有实现 major gc，只有 cms 和 g1 是是实现了 major gc。&lt;/p&gt;
 &lt;p&gt;网上对于 full gc 的说法众说纷纭，到现在都没整明白。full gc 是对整个堆和方法区进行 gc，minor 是针对年轻代的也就是 edan + s0 或 s1 吧， major 就是老年代，对于 serial, serial old, p new, parallel, parallel old, cms, g1 这么多回收器来说&lt;br&gt;
  serial, p new, parallel 都是针对年轻代的&lt;br&gt;
- serial old, parallel old 都是针对老年代的，都是一整个 stw&lt;/p&gt;
-&lt;p&gt;那么网上就有说法，stw 就是 full gc&lt;/p&gt;
+ serial old, parallel old 都是针对老年代的，都是一整个 stw&lt;br&gt;
+ 然而对于 cms 和 g1 来说，是有四个阶段的，初始标记和重复标记需要 stw，并且 g1 的最后一个清理阶段也是要 stw 的，总结来说就是 cms 有两个 stw，但是 g1 有三个。那么为什么说 g1 改进了 cms 呢&lt;/p&gt;
+&lt;p&gt;这个也有几点说法，一个就是 g1 的内存不在连续了，而是用的分块 partition，并且由于使用的是复制删除，但是 cms 用的是标记删除，所以 cms 会有内存碎片的问题，有内存碎片就可能触发 full gc&lt;/p&gt;
+&lt;p&gt;这边有了新的理解，也就是对于 cms 和 g1 来说都是 major gc，也就是针对老年代的，但是在 cms 和 g1 触发期间，如果老年代不足了，那么就会触发 full gc，也就是全清，暂时下面先不讲了&lt;/p&gt;
+&lt;p&gt;直接说元空间对于永久代的改进，我感觉就是从根本上来说的话，就是元空间实现在了本地内存上，而跟 jvm 内存隔离开来了，网上有说元空间会触发 full gc，我觉得不正确，奶奶的，那特么这个隔离开来还有什么几把用，超，迷惑我一下午，我觉得隔离开来，就不会使用 jvm 那一套回收机制了，而是使用操作系统的一套回收机制，但是 jvm 仍然可以通过参数来限制元空间&lt;br&gt;
+这就显得元空间和永久代的区别很明显了，首先对于 full gc，之前永久代和堆是连续的内存空间，也就是在 jvm 的物理内存中是连续的，属于是逻辑上的隔离，但是这就会对 gc 带来难度，并且永久代中存的是有关类的数据，gc 效率不高，因为回收一个类的条件过于苛刻了。第二个就是内存了，元空间移到了本地内存上面，本地内存多大我多大，可以灵活调整，而不是永久代那样，一旦限定就不好改了，并且也没人能够很准确的估算出给出合适的永久代内存空间，所以，总结下来就两点我认为最重要：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;内存参数的设置可以更灵活了&lt;/li&gt;
+&lt;li&gt;gc 效率更高&lt;br&gt;
+什么其他的为了和 jrocket 整合，感觉不是很重要&lt;/li&gt;
+&lt;/ul&gt;
 </content>
         <category term="JVM" />
         <updated>2023-10-10T02:14:11.000Z</updated>
