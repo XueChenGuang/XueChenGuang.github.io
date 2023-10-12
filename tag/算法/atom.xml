@@ -19,6 +19,7 @@
     <category term="SQL" />
     <category term="JVM" />
     <category term="多线程" />
+    <category term="kafka" />
     <entry>
         <id>http://example.com/2023/09/20/UF%E5%92%8CKruskal/</id>
         <title>UF和Kruskal</title>

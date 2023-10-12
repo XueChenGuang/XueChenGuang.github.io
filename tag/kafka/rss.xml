@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>该死的秋招 • Posts by &#34;kafka&#34; tag</title>
+        <link>http://example.com</link>
+        <description>孵化中···</description>
+        <language>zh-CN</language>
+        <pubDate>Thu, 12 Oct 2023 21:06:00 +0800</pubDate>
+        <lastBuildDate>Thu, 12 Oct 2023 21:06:00 +0800</lastBuildDate>
+        <category>hello blog</category>
+        <category>设计模式</category>
+        <category>MySQL</category>
+        <category>算法</category>
+        <category>Redis</category>
+        <category>其他</category>
+        <category>分布式</category>
+        <category>数据结构</category>
+        <category>Spring</category>
+        <category>Thread</category>
+        <category>Java</category>
+        <category>JDK</category>
+        <category>SQL</category>
+        <category>JVM</category>
+        <category>多线程</category>
+        <category>kafka</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2023/10/12/kafka%E7%9B%B8%E5%85%B3/</guid>
+            <title>kafka相关</title>
+            <link>http://example.com/2023/10/12/kafka%E7%9B%B8%E5%85%B3/</link>
+            <category>kafka</category>
+            <pubDate>Thu, 12 Oct 2023 21:06:00 +0800</pubDate>
+            <description><![CDATA[ &lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;对于 kafka，没有使用经验，但是有的面试会问到，水也深，只能记一些理解的&lt;br&gt;
+先上图：&lt;br&gt;
+&lt;img data-src=&#34;https://pic.imgdb.cn/item/6527f038c458853aef7b1fa7.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;构成&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#构成&#34;&gt;#&lt;/a&gt; 构成&lt;/h3&gt;
+&lt;p&gt;简单聊一下构成，直接从大的来说，一个 kafka 服务器被称作一个 broker，若干个 broker 组成 kafka 集群；对于内部来说，broker 由若干个 topic 组成，每个 topic 包括若干个 partition，对于消费者来说，可以消费不同的 partition，所以可以支持批量消费，但是对于一个 partition 来说，消费者不能重复消费。&lt;/p&gt;
+&lt;h3 id=&#34;如何保证消费的有序&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何保证消费的有序&#34;&gt;#&lt;/a&gt; 如何保证消费的有序&lt;/h3&gt;
+&lt;p&gt;kafka 的 partition 中消息的存入是有序的，也就是链表的形式，所以要保证消费的有序，那么生产要生产到指定的分区，并且消费也针对具体的分区；或者就是只使用一个 partition。&lt;/p&gt;
+&lt;h3 id=&#34;如何防止重复消费&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何防止重复消费&#34;&gt;#&lt;/a&gt; 如何防止重复消费&lt;/h3&gt;
+&lt;p&gt;如果参数设置 auto-commit 为 true 的话，那么 offset 可能会提交不成功，那么就会导致重复消费；所以如果要防止重复消费，这个参数要设置成 false，具体的实现应该是 consumer 自主控制 offset。&lt;/p&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>

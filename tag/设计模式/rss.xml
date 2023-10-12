@@ -22,6 +22,7 @@
         <category>SQL</category>
         <category>JVM</category>
         <category>多线程</category>
+        <category>kafka</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/09/14/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%BB%8E%E4%BB%A3%E7%A0%81%E5%B1%82%E9%9D%A2%EF%BC%89/</guid>
             <title>设计模式（从代码层面）</title>

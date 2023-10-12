@@ -19,6 +19,7 @@
     <category term="SQL" />
     <category term="JVM" />
     <category term="多线程" />
+    <category term="kafka" />
     <entry>
         <id>http://example.com/2023/10/10/join%E8%A1%A8%E8%BF%9E%E6%8E%A5/</id>
         <title>join表连接</title>

@@ -22,6 +22,7 @@
         <category>SQL</category>
         <category>JVM</category>
         <category>多线程</category>
+        <category>kafka</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/09/28/%E5%B9%82%E7%AD%89%E5%AE%9E%E7%8E%B0/</guid>
             <title>幂等实现</title>

@@ -22,6 +22,7 @@
         <category>SQL</category>
         <category>JVM</category>
         <category>多线程</category>
+        <category>kafka</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/10/07/IOC%E5%92%8CAOP/</guid>
             <title>IOC和AOP</title>

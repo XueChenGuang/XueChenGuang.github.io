@@ -22,6 +22,7 @@
         <category>SQL</category>
         <category>JVM</category>
         <category>多线程</category>
+        <category>kafka</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/10/10/SQL%E4%BC%98%E5%8C%96/</guid>
             <title>SQL优化</title>

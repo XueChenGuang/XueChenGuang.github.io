@@ -5,8 +5,8 @@
         <link>http://example.com</link>
         <description>孵化中···</description>
         <language>zh-CN</language>
-        <pubDate>Wed, 11 Oct 2023 11:49:38 +0800</pubDate>
-        <lastBuildDate>Wed, 11 Oct 2023 11:49:38 +0800</lastBuildDate>
+        <pubDate>Thu, 12 Oct 2023 21:06:00 +0800</pubDate>
+        <lastBuildDate>Thu, 12 Oct 2023 21:06:00 +0800</lastBuildDate>
         <category>hello blog</category>
         <category>设计模式</category>
         <category>MySQL</category>
@@ -22,6 +22,25 @@
         <category>SQL</category>
         <category>JVM</category>
         <category>多线程</category>
+        <category>kafka</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2023/10/12/kafka%E7%9B%B8%E5%85%B3/</guid>
+            <title>kafka相关</title>
+            <link>http://example.com/2023/10/12/kafka%E7%9B%B8%E5%85%B3/</link>
+            <category>kafka</category>
+            <pubDate>Thu, 12 Oct 2023 21:06:00 +0800</pubDate>
+            <description><![CDATA[ &lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;对于 kafka，没有使用经验，但是有的面试会问到，水也深，只能记一些理解的&lt;br&gt;
+先上图：&lt;br&gt;
+&lt;img data-src=&#34;https://pic.imgdb.cn/item/6527f038c458853aef7b1fa7.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;构成&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#构成&#34;&gt;#&lt;/a&gt; 构成&lt;/h3&gt;
+&lt;p&gt;简单聊一下构成，直接从大的来说，一个 kafka 服务器被称作一个 broker，若干个 broker 组成 kafka 集群；对于内部来说，broker 由若干个 topic 组成，每个 topic 包括若干个 partition，对于消费者来说，可以消费不同的 partition，所以可以支持批量消费，但是对于一个 partition 来说，消费者不能重复消费。&lt;/p&gt;
+&lt;h3 id=&#34;如何保证消费的有序&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何保证消费的有序&#34;&gt;#&lt;/a&gt; 如何保证消费的有序&lt;/h3&gt;
+&lt;p&gt;kafka 的 partition 中消息的存入是有序的，也就是链表的形式，所以要保证消费的有序，那么生产要生产到指定的分区，并且消费也针对具体的分区；或者就是只使用一个 partition。&lt;/p&gt;
+&lt;h3 id=&#34;如何防止重复消费&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何防止重复消费&#34;&gt;#&lt;/a&gt; 如何防止重复消费&lt;/h3&gt;
+&lt;p&gt;如果参数设置 auto-commit 为 true 的话，那么 offset 可能会提交不成功，那么就会导致重复消费；所以如果要防止重复消费，这个参数要设置成 false，具体的实现应该是 consumer 自主控制 offset。&lt;/p&gt;
+ ]]></description>
+        </item>
         <item>
             <guid isPermalink="true">http://example.com/2023/10/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E5%A4%A7%E7%89%B9%E6%80%A7/</guid>
             <title>多线程的三大特性</title>
@@ -140,6 +159,12 @@ CPU 的处理速度和内存的读写速度差距过大，所以在 CPU 和内�
 永久代和堆的空间在物理内存上是连续的，也就是说他们仅仅是逻辑上的区分；但是元空间使用本地内存，也就是说当本地内存不超的时候就不会出现 oom。原先的永久代对于类加载过多会导致 oom&lt;/p&gt;
 &lt;p&gt;对于永久代中的字符串常量池和静态变量都转移到了堆中&lt;br&gt;
 &lt;img data-src=&#34;https://pic.imgdb.cn/item/6527d219c458853aef091689.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;目前记录一些想法：&lt;br&gt;
+gc 有很多的类型，minor gc、major gc 和 full gc 这三种吧；但是大部分的 gc 算法并没有实现 major gc，只有 cms 和 g1 是是实现了 major gc。&lt;/p&gt;
+&lt;p&gt;网上对于 full gc 的说法众说纷纭，到现在都没整明白。full gc 是对整个堆和方法区进行 gc，minor 是针对年轻代的也就是 edan + s0 或 s1 吧， major 就是老年代，对于 serial, serial old, p new, parallel, parallel old, cms, g1 这么多回收器来说&lt;br&gt;
+ serial, p new, parallel 都是针对年轻代的&lt;br&gt;
+ serial old, parallel old 都是针对老年代的，都是一整个 stw&lt;/p&gt;
+&lt;p&gt;那么网上就有说法，stw 就是 full gc&lt;/p&gt;
  ]]></description>
         </item>
         <item>

@@ -19,6 +19,7 @@
     <category term="SQL" />
     <category term="JVM" />
     <category term="多线程" />
+    <category term="kafka" />
     <entry>
         <id>http://example.com/2023/10/10/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8GC/</id>
         <title>垃圾回收器GC</title>
@@ -35,6 +36,12 @@
 永久代和堆的空间在物理内存上是连续的，也就是说他们仅仅是逻辑上的区分；但是元空间使用本地内存，也就是说当本地内存不超的时候就不会出现 oom。原先的永久代对于类加载过多会导致 oom&lt;/p&gt;
 &lt;p&gt;对于永久代中的字符串常量池和静态变量都转移到了堆中&lt;br&gt;
 &lt;img data-src=&#34;https://pic.imgdb.cn/item/6527d219c458853aef091689.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;目前记录一些想法：&lt;br&gt;
+gc 有很多的类型，minor gc、major gc 和 full gc 这三种吧；但是大部分的 gc 算法并没有实现 major gc，只有 cms 和 g1 是是实现了 major gc。&lt;/p&gt;
+&lt;p&gt;网上对于 full gc 的说法众说纷纭，到现在都没整明白。full gc 是对整个堆和方法区进行 gc，minor 是针对年轻代的也就是 edan + s0 或 s1 吧， major 就是老年代，对于 serial, serial old, p new, parallel, parallel old, cms, g1 这么多回收器来说&lt;br&gt;
+ serial, p new, parallel 都是针对年轻代的&lt;br&gt;
+ serial old, parallel old 都是针对老年代的，都是一整个 stw&lt;/p&gt;
+&lt;p&gt;那么网上就有说法，stw 就是 full gc&lt;/p&gt;
 </content>
         <category term="JVM" />
         <updated>2023-10-10T02:14:11.000Z</updated>

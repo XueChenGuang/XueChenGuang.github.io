@@ -19,6 +19,7 @@
     <category term="SQL" />
     <category term="JVM" />
     <category term="多线程" />
+    <category term="kafka" />
     <entry>
         <id>http://example.com/2023/07/13/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87blog/</id>
         <title>我的第一篇blog</title>
