@@ -23,6 +23,7 @@
         <category>JVM</category>
         <category>多线程</category>
         <category>kafka</category>
+        <category>SpringBoot</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/10/12/kafka%E7%9B%B8%E5%85%B3/</guid>
             <title>kafka相关</title>
@@ -39,6 +40,9 @@
 &lt;p&gt;kafka 的 partition 中消息的存入是有序的，也就是链表的形式，所以要保证消费的有序，那么生产要生产到指定的分区，并且消费也针对具体的分区；或者就是只使用一个 partition。&lt;/p&gt;
 &lt;h3 id=&#34;如何防止重复消费&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何防止重复消费&#34;&gt;#&lt;/a&gt; 如何防止重复消费&lt;/h3&gt;
 &lt;p&gt;如果参数设置 auto-commit 为 true 的话，那么 offset 可能会提交不成功，那么就会导致重复消费；所以如果要防止重复消费，这个参数要设置成 false，具体的实现应该是 consumer 自主控制 offset。&lt;/p&gt;
+&lt;h3 id=&#34;如何保证消息不丢失&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何保证消息不丢失&#34;&gt;#&lt;/a&gt; 如何保证消息不丢失&lt;/h3&gt;
+&lt;p&gt;&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC80NTk2MTA0MTg=&#34;&gt;https://zhuanlan.zhihu.com/p/459610418&lt;/span&gt;&lt;br&gt;
+ 这篇写挺好的&lt;/p&gt;
  ]]></description>
         </item>
     </channel>

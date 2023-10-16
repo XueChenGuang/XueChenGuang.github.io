@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>http://example.com</id>
+    <title>该死的秋招 • Posts by &#34;springboot&#34; tag</title>
+    <link href="http://example.com" />
+    <updated>2023-10-16T13:02:59.000Z</updated>
+    <category term="hello blog" />
+    <category term="设计模式" />
+    <category term="MySQL" />
+    <category term="算法" />
+    <category term="Redis" />
+    <category term="其他" />
+    <category term="分布式" />
+    <category term="数据结构" />
+    <category term="Spring" />
+    <category term="Thread" />
+    <category term="Java" />
+    <category term="JDK" />
+    <category term="SQL" />
+    <category term="JVM" />
+    <category term="多线程" />
+    <category term="kafka" />
+    <category term="SpringBoot" />
+    <entry>
+        <id>http://example.com/2023/10/16/SpringBoot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/</id>
+        <title>SpringBoot自动装配</title>
+        <link rel="alternate" href="http://example.com/2023/10/16/SpringBoot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;对于 spring boot 的装配或者说启动流程，确实比较复杂，最近了解的内容感觉仅仅只能用作面试的回答。&lt;/p&gt;
+&lt;h3 id=&#34;自动装配&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#自动装配&#34;&gt;#&lt;/a&gt; 自动装配&lt;/h3&gt;
+&lt;p&gt;对于 spring boot 而言，最典型的就是 @springbootapplication 这个注解，组合注解，包括主要的三个注解 @springbootconfiguration、@import、componentscan&lt;/p&gt;
+&lt;p&gt;@springbootconfiguration 继承 @configuration 注解，也就是将当前类给加载到 context 中（IOC 容器）&lt;br&gt;
+@componentscan 就是表明要扫描的包，也就是所谓的扫描和 application 同级的所在的所有的包中的 bean，来注入。&lt;br&gt;
+@import 才是自动装配的核心注解，其中实现的 autoimportselector，采用 spi 思想，完成第三方 jar 包的自动注入，统一的原则就是加载 META-info 下面的 spring.factory 配置文件（以键值对的方式存储配置），key 是 autoconfiguration 的值会被放到 context 中，然后不停的重复这个过程，直至所有的第三方 jar 包都被加载&lt;/p&gt;
+&lt;p&gt;对于 SPI，JDBC 也有用到，主要的思想就是给出一套规定，然后不同的提供者也就是三方去实现，我们只需要引入 jar 包即可，但是如果仅仅是这样，那么程序员仍然要通过 configuration 打入相应的 string，来选择使用哪一个，这就将配置的这个值交给了第三方厂商，让他们在指定位置创建这个配置文件，spi 只需要提供规则，然后去解析，即可。程序员只需要引入 jar 包就完事。&lt;/p&gt;
+</content>
+        <category term="SpringBoot" />
+        <updated>2023-10-16T13:02:59.000Z</updated>
+    </entry>
+</feed>

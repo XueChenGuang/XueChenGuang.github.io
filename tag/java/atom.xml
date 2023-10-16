@@ -20,6 +20,7 @@
     <category term="JVM" />
     <category term="多线程" />
     <category term="kafka" />
+    <category term="SpringBoot" />
     <entry>
         <id>http://example.com/2023/10/06/%E7%BA%BF%E7%A8%8B%E6%B1%A0/</id>
         <title>线程池</title>

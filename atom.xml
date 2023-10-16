@@ -3,7 +3,7 @@
     <id>http://example.com</id>
     <title>该死的秋招</title>
     <link href="http://example.com" />
-    <updated>2023-10-12T13:06:00.000Z</updated>
+    <updated>2023-10-16T13:02:59.000Z</updated>
     <category term="hello blog" />
     <category term="设计模式" />
     <category term="MySQL" />
@@ -20,6 +20,23 @@
     <category term="JVM" />
     <category term="多线程" />
     <category term="kafka" />
+    <category term="SpringBoot" />
+    <entry>
+        <id>http://example.com/2023/10/16/SpringBoot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/</id>
+        <title>SpringBoot自动装配</title>
+        <link rel="alternate" href="http://example.com/2023/10/16/SpringBoot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;对于 spring boot 的装配或者说启动流程，确实比较复杂，最近了解的内容感觉仅仅只能用作面试的回答。&lt;/p&gt;
+&lt;h3 id=&#34;自动装配&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#自动装配&#34;&gt;#&lt;/a&gt; 自动装配&lt;/h3&gt;
+&lt;p&gt;对于 spring boot 而言，最典型的就是 @springbootapplication 这个注解，组合注解，包括主要的三个注解 @springbootconfiguration、@import、componentscan&lt;/p&gt;
+&lt;p&gt;@springbootconfiguration 继承 @configuration 注解，也就是将当前类给加载到 context 中（IOC 容器）&lt;br&gt;
+@componentscan 就是表明要扫描的包，也就是所谓的扫描和 application 同级的所在的所有的包中的 bean，来注入。&lt;br&gt;
+@import 才是自动装配的核心注解，其中实现的 autoimportselector，采用 spi 思想，完成第三方 jar 包的自动注入，统一的原则就是加载 META-info 下面的 spring.factory 配置文件（以键值对的方式存储配置），key 是 autoconfiguration 的值会被放到 context 中，然后不停的重复这个过程，直至所有的第三方 jar 包都被加载&lt;/p&gt;
+&lt;p&gt;对于 SPI，JDBC 也有用到，主要的思想就是给出一套规定，然后不同的提供者也就是三方去实现，我们只需要引入 jar 包即可，但是如果仅仅是这样，那么程序员仍然要通过 configuration 打入相应的 string，来选择使用哪一个，这就将配置的这个值交给了第三方厂商，让他们在指定位置创建这个配置文件，spi 只需要提供规则，然后去解析，即可。程序员只需要引入 jar 包就完事。&lt;/p&gt;
+</content>
+        <category term="SpringBoot" />
+        <updated>2023-10-16T13:02:59.000Z</updated>
+    </entry>
     <entry>
         <id>http://example.com/2023/10/12/kafka%E7%9B%B8%E5%85%B3/</id>
         <title>kafka相关</title>
@@ -34,6 +51,9 @@
 &lt;p&gt;kafka 的 partition 中消息的存入是有序的，也就是链表的形式，所以要保证消费的有序，那么生产要生产到指定的分区，并且消费也针对具体的分区；或者就是只使用一个 partition。&lt;/p&gt;
 &lt;h3 id=&#34;如何防止重复消费&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何防止重复消费&#34;&gt;#&lt;/a&gt; 如何防止重复消费&lt;/h3&gt;
 &lt;p&gt;如果参数设置 auto-commit 为 true 的话，那么 offset 可能会提交不成功，那么就会导致重复消费；所以如果要防止重复消费，这个参数要设置成 false，具体的实现应该是 consumer 自主控制 offset。&lt;/p&gt;
+&lt;h3 id=&#34;如何保证消息不丢失&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何保证消息不丢失&#34;&gt;#&lt;/a&gt; 如何保证消息不丢失&lt;/h3&gt;
+&lt;p&gt;&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC80NTk2MTA0MTg=&#34;&gt;https://zhuanlan.zhihu.com/p/459610418&lt;/span&gt;&lt;br&gt;
+ 这篇写挺好的&lt;/p&gt;
 </content>
         <category term="kafka" />
         <updated>2023-10-12T13:06:00.000Z</updated>
@@ -160,12 +180,12 @@ gc 有很多的类型，minor gc、major gc 和 full gc 这三种吧；但是大
  serial, p new, parallel 都是针对年轻代的&lt;br&gt;
  serial old, parallel old 都是针对老年代的，都是一整个 stw&lt;br&gt;
  然而对于 cms 和 g1 来说，是有四个阶段的，初始标记和重复标记需要 stw，并且 g1 的最后一个清理阶段也是要 stw 的，总结来说就是 cms 有两个 stw，但是 g1 有三个。那么为什么说 g1 改进了 cms 呢&lt;/p&gt;
-&lt;p&gt;这个也有几点说法，一个就是 g1 的内存不在连续了，而是用的分块 partition，并且由于使用的是复制删除，但是 cms 用的是标记删除，所以 cms 会有内存碎片的问题，有内存碎片就可能触发 full gc&lt;/p&gt;
+&lt;p&gt;这个也有几点说法，一个就是 g1 的内存不在连续了，而是用的分块 partition，并且由于使用的是复制删除，所以需要 stw 来进行类的内存整合，但是 cms 用的是标记删除，所以 cms 会有内存碎片的问题，有内存碎片就可能触发 full gc&lt;/p&gt;
 &lt;p&gt;这边有了新的理解，也就是对于 cms 和 g1 来说都是 major gc，也就是针对老年代的，但是在 cms 和 g1 触发期间，如果老年代不足了，那么就会触发 full gc，也就是全清，暂时下面先不讲了&lt;/p&gt;
 &lt;p&gt;直接说元空间对于永久代的改进，我感觉就是从根本上来说的话，就是元空间实现在了本地内存上，而跟 jvm 内存隔离开来了，网上有说元空间会触发 full gc，我觉得不正确，奶奶的，那特么这个隔离开来还有什么几把用，超，迷惑我一下午，我觉得隔离开来，就不会使用 jvm 那一套回收机制了，而是使用操作系统的一套回收机制，但是 jvm 仍然可以通过参数来限制元空间&lt;br&gt;
 这就显得元空间和永久代的区别很明显了，首先对于 full gc，之前永久代和堆是连续的内存空间，也就是在 jvm 的物理内存中是连续的，属于是逻辑上的隔离，但是这就会对 gc 带来难度，并且永久代中存的是有关类的数据，gc 效率不高，因为回收一个类的条件过于苛刻了。第二个就是内存了，元空间移到了本地内存上面，本地内存多大我多大，可以灵活调整，而不是永久代那样，一旦限定就不好改了，并且也没人能够很准确的估算出给出合适的永久代内存空间，所以，总结下来就两点我认为最重要：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;内存参数的设置可以更灵活了&lt;/li&gt;
+&lt;li&gt;内存参数的设置可以更灵活了，永久代经常会 oom，但是也不是说元空间不会 oom&lt;/li&gt;
 &lt;li&gt;gc 效率更高&lt;br&gt;
 什么其他的为了和 jrocket 整合，感觉不是很重要&lt;/li&gt;
 &lt;/ul&gt;
