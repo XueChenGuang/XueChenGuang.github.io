@@ -74,6 +74,37 @@
         <updated>2023-10-24T01:55:44.000Z</updated>
     </entry>
     <entry>
+        <id>http://example.com/2023/10/23/volatile/</id>
+        <title>volatile</title>
+        <link rel="alternate" href="http://example.com/2023/10/23/volatile/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;缓存一致性协议和 volatile 没有一毛钱关系！&lt;/p&gt;
+&lt;h3 id=&#34;cpu的结构&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#cpu的结构&#34;&gt;#&lt;/a&gt; cpu 的结构&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://pic.imgdb.cn/item/6537385bc458853aefa78387.jpg&#34; alt=&#34;&#34;&gt;&lt;br&gt;
+其中涉及到多核 cpu，也就是一个 cpu 里面有多套 alu+register+pc，一台电脑中也会存在多个 cpu，那么就是第一个图。&lt;/p&gt;
+&lt;p&gt;对于 4 核 8 线程，这个就是图二了，也就是一个 alu 公用一套 register+pc；所以对于一台主机而言，存在着三个层次，有几个 cpu？cpu 有几个核？一个核支持跑几个线程？&lt;/p&gt;
+&lt;p&gt;通透！&lt;/p&gt;
+&lt;h3 id=&#34;缓存结构&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#缓存结构&#34;&gt;#&lt;/a&gt; 缓存结构&lt;/h3&gt;
+&lt;p&gt;历史原因就是 cpu 速度很快，但是从内存中读取指令很慢，所以中间加缓存。工业原因，普遍的就是三层 l1，l2，l3。&lt;br&gt;
+有了第一节的知识，那么 l1，l2 是核内的；l3 是核之间的，内存就是多个 cpu 之间共享的。&lt;/p&gt;
+&lt;h3 id=&#34;线程安全问题的原因&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#线程安全问题的原因&#34;&gt;#&lt;/a&gt; 线程安全问题的原因&lt;/h3&gt;
+&lt;p&gt;但是看到了一个很有意思的评论：线程安全是由这三大问题导致的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;cpu 缓存引起的可见性问题，缓存与主存&lt;/li&gt;
+&lt;li&gt;cpu 指令重排，引起的顺序问题&lt;/li&gt;
+&lt;li&gt;cpu 切换，线程中断引起的原子性问题，也就是 cpu 切换&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;volatile&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#volatile&#34;&gt;#&lt;/a&gt; volatile&lt;/h3&gt;
+&lt;p&gt;之前写了一篇 volatile，但是中途遇到为什么 volatile 不能保证原子性，从而涉及到有说 mesi 的，由于 mesi 式缓存一致的，并且会导致缓存 invalid 等等，总而言之，我没有获取到我很满意的答案。&lt;/p&gt;
+&lt;p&gt;so，我就将我自己的理解用一句话总结，volatile 和 MESI 缓存一致性协议，没有任何的关系，volatile 可以理解为一个规范的实现，就是 jvm 中规定的 happens before 原则。遇到 volatile 时，需要怎样才能保证 happens before 原则生效呢？所以有了内存屏障 ss，sl，ll，ls；如何实现内存屏障呢，交由操作系统的，交给硬件有 mesi，原语，lock 等；通过一层层的封装，完成了 volatile 的实现。&lt;/p&gt;
+&lt;p&gt;今天我看到 hotspot 的 volatile 底层，使用的是 lock 一条 + 0 的指令来锁总线，那么我是不是可以理解为，当 lock 保证了可见性后，volatile 完成 + 1 操作，还没 store，cpu 切换；另外一个线程进行读取，+1 且 store 之后，切换回来。这个时候 A 线程继续执行。感觉这个解释还是有问题，我自己还是没搞懂，算求。&lt;/p&gt;
+&lt;p&gt;贴几张我认为很重要的图，其中的缓存行对齐确实是一个比较有意思的东西。&lt;br&gt;
+&lt;img data-src=&#34;https://pic.imgdb.cn/item/65377273c458853aef4cdb81.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+</content>
+        <category term="多线程" />
+        <updated>2023-10-23T03:05:46.000Z</updated>
+    </entry>
+    <entry>
         <id>http://example.com/2023/10/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E5%A4%A7%E7%89%B9%E6%80%A7/</id>
         <title>多线程的三大特性</title>
         <link rel="alternate" href="http://example.com/2023/10/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E5%A4%A7%E7%89%B9%E6%80%A7/"/>

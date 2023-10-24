@@ -25,6 +25,16 @@
             ]
         },
         {
+            "id": "http://example.com/2023/10/23/volatile/",
+            "url": "http://example.com/2023/10/23/volatile/",
+            "title": "volatile",
+            "date_published": "2023-10-23T03:05:46.000Z",
+            "content_html": "<h3 id=\"写在前面\"><a class=\"markdownIt-Anchor\" href=\"#写在前面\">#</a> 写在前面</h3>\n<p>缓存一致性协议和 volatile 没有一毛钱关系！</p>\n<h3 id=\"cpu的结构\"><a class=\"markdownIt-Anchor\" href=\"#cpu的结构\">#</a> cpu 的结构</h3>\n<p><img data-src=\"https://pic.imgdb.cn/item/6537385bc458853aefa78387.jpg\" alt=\"\"><br>\n其中涉及到多核 cpu，也就是一个 cpu 里面有多套 alu+register+pc，一台电脑中也会存在多个 cpu，那么就是第一个图。</p>\n<p>对于 4 核 8 线程，这个就是图二了，也就是一个 alu 公用一套 register+pc；所以对于一台主机而言，存在着三个层次，有几个 cpu？cpu 有几个核？一个核支持跑几个线程？</p>\n<p>通透！</p>\n<h3 id=\"缓存结构\"><a class=\"markdownIt-Anchor\" href=\"#缓存结构\">#</a> 缓存结构</h3>\n<p>历史原因就是 cpu 速度很快，但是从内存中读取指令很慢，所以中间加缓存。工业原因，普遍的就是三层 l1，l2，l3。<br>\n有了第一节的知识，那么 l1，l2 是核内的；l3 是核之间的，内存就是多个 cpu 之间共享的。</p>\n<h3 id=\"线程安全问题的原因\"><a class=\"markdownIt-Anchor\" href=\"#线程安全问题的原因\">#</a> 线程安全问题的原因</h3>\n<p>但是看到了一个很有意思的评论：线程安全是由这三大问题导致的：</p>\n<ul>\n<li>cpu 缓存引起的可见性问题，缓存与主存</li>\n<li>cpu 指令重排，引起的顺序问题</li>\n<li>cpu 切换，线程中断引起的原子性问题，也就是 cpu 切换</li>\n</ul>\n<h3 id=\"volatile\"><a class=\"markdownIt-Anchor\" href=\"#volatile\">#</a> volatile</h3>\n<p>之前写了一篇 volatile，但是中途遇到为什么 volatile 不能保证原子性，从而涉及到有说 mesi 的，由于 mesi 式缓存一致的，并且会导致缓存 invalid 等等，总而言之，我没有获取到我很满意的答案。</p>\n<p>so，我就将我自己的理解用一句话总结，volatile 和 MESI 缓存一致性协议，没有任何的关系，volatile 可以理解为一个规范的实现，就是 jvm 中规定的 happens before 原则。遇到 volatile 时，需要怎样才能保证 happens before 原则生效呢？所以有了内存屏障 ss，sl，ll，ls；如何实现内存屏障呢，交由操作系统的，交给硬件有 mesi，原语，lock 等；通过一层层的封装，完成了 volatile 的实现。</p>\n<p>今天我看到 hotspot 的 volatile 底层，使用的是 lock 一条 + 0 的指令来锁总线，那么我是不是可以理解为，当 lock 保证了可见性后，volatile 完成 + 1 操作，还没 store，cpu 切换；另外一个线程进行读取，+1 且 store 之后，切换回来。这个时候 A 线程继续执行。感觉这个解释还是有问题，我自己还是没搞懂，算求。</p>\n<p>贴几张我认为很重要的图，其中的缓存行对齐确实是一个比较有意思的东西。<br>\n<img data-src=\"https://pic.imgdb.cn/item/65377273c458853aef4cdb81.jpg\" alt=\"\"></p>\n",
+            "tags": [
+                "多线程"
+            ]
+        },
+        {
             "id": "http://example.com/2023/10/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E5%A4%A7%E7%89%B9%E6%80%A7/",
             "url": "http://example.com/2023/10/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E5%A4%A7%E7%89%B9%E6%80%A7/",
             "title": "多线程的三大特性",
