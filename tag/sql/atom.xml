@@ -21,6 +21,9 @@
     <category term="多线程" />
     <category term="kafka" />
     <category term="SpringBoot" />
+    <category term="JUC相关零碎知识点乱写" />
+    <category term="hashmap" />
+    <category term="JUC" />
     <entry>
         <id>http://example.com/2023/10/10/SQL%E4%BC%98%E5%8C%96/</id>
         <title>SQL优化</title>

@@ -24,6 +24,9 @@
         <category>多线程</category>
         <category>kafka</category>
         <category>SpringBoot</category>
+        <category>JUC相关零碎知识点乱写</category>
+        <category>hashmap</category>
+        <category>JUC</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/10/07/IOC%E5%92%8CAOP/</guid>
             <title>IOC和AOP</title>

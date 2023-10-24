@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+    <channel>
+        <title>该死的秋招 • Posts by &#34;juc&#34; tag</title>
+        <link>http://example.com</link>
+        <description>孵化中···</description>
+        <language>zh-CN</language>
+        <pubDate>Mon, 23 Oct 2023 11:05:46 +0800</pubDate>
+        <lastBuildDate>Mon, 23 Oct 2023 11:05:46 +0800</lastBuildDate>
+        <category>hello blog</category>
+        <category>设计模式</category>
+        <category>MySQL</category>
+        <category>算法</category>
+        <category>Redis</category>
+        <category>其他</category>
+        <category>分布式</category>
+        <category>数据结构</category>
+        <category>Spring</category>
+        <category>Thread</category>
+        <category>Java</category>
+        <category>JDK</category>
+        <category>SQL</category>
+        <category>JVM</category>
+        <category>多线程</category>
+        <category>kafka</category>
+        <category>SpringBoot</category>
+        <category>JUC相关零碎知识点乱写</category>
+        <category>hashmap</category>
+        <category>JUC</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2023/10/23/volatile/</guid>
+            <title>volatile</title>
+            <link>http://example.com/2023/10/23/volatile/</link>
+            <category>JUC</category>
+            <pubDate>Mon, 23 Oct 2023 11:05:46 +0800</pubDate>
+            <description><![CDATA[ &lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;对于 volatile，很神奇，玛德，感觉懂了，但是每次一回想总感觉差点什么。&lt;/p&gt;
+&lt;h3 id=&#34;缓存行&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#缓存行&#34;&gt;#&lt;/a&gt; 缓存行&lt;/h3&gt;
+&lt;p&gt;缓存行也是最近刚刷新的一个概念，对于线程来说，都会将内存中的数据缓存到各自的缓存中，也就是所谓的 cache。那么这个 cache 是怎么读取的呢，一行 64 字节，所以如果需要读取的变量在这一行上，那么就会将这一整行读进来，也就是说 cache 读取的最小单位是 64 字节。&lt;/p&gt;
+&lt;h3 id=&#34;缓存一致性&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#缓存一致性&#34;&gt;#&lt;/a&gt; 缓存一致性&lt;/h3&gt;
+&lt;p&gt;那么如何保证缓存一致性呢？&lt;br&gt;
+有一种现象，两个线程，读取了同一个缓存行，两个都对这个缓存行上的数据进行了修改，那么当一个修改完了，没有通知另一个的时候，这个时候就出现了不一致的问题，也就是经典的多线程的问题。&lt;/p&gt;
+&lt;h3 id=&#34;volatile&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#volatile&#34;&gt;#&lt;/a&gt; volatile&lt;/h3&gt;
+&lt;p&gt;引入今天的主角，volatile&lt;br&gt;
+volatile 有两个特性，可见性和一致性（多线程三大特性，满足两个），那么是如何保证的呢。个人感觉说这两个特性有点抽象，其实 volatile 干的事就是强制走主存并且禁止指令重排（加入了内存屏障 ss 写 sl； ll 读 ls）&lt;/p&gt;
+&lt;p&gt;volatile 的规范有这两个，当读取 volatile 的时候必须从主存中进行读取（也就是跨过缓存，读主存，然后将主存中的数据再读到缓存中来），修改完 volatile 变量后同步到主存中。但是像 i++ 这样需要读取，然后再赋值的情况，volatile 就解决不了。&lt;/p&gt;
+&lt;p&gt;为什么解决不了呢，网上有从 cpu 的结构出发的 cpu 包括 pc 寄存器 以及 alu；有个说法是读取 m 的值到寄存器中了，那么这个 m 值发生变化的话，只会影响到 cpu 缓存并不会干涉到寄存器，所以 invalid 就不行。另外一个说的是虽然读到了，但是执行了 + 1 操作，这个时候进行 store，是不会进行重新读取的，如果没有进行 + 1 操作，那么 m 值 invalid 之后还是会进行重新读取的。&lt;/p&gt;
+&lt;p&gt;目前个人更偏向于后者，前者感觉有点问题，但也说不出哪里有问题 hhhh&lt;/p&gt;
+&lt;p&gt;但是看到了一个很有意思的评论：线程安全是由这三大问题导致的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;cpu 缓存引起的可见性问题，缓存与主存&lt;/li&gt;
+&lt;li&gt;cpu 指令重排，引起的顺序问题&lt;/li&gt;
+&lt;li&gt;cpu 切换，线程中断引起的原子性问题，也就是 cpu 切换&lt;/li&gt;
+&lt;/ul&gt;
+ ]]></description>
+        </item>
+        <item>
+            <guid isPermalink="true">http://example.com/2023/10/22/threadlocal/</guid>
+            <title>threadlocal</title>
+            <link>http://example.com/2023/10/22/threadlocal/</link>
+            <category>JUC</category>
+            <pubDate>Sun, 22 Oct 2023 16:08:16 +0800</pubDate>
+            <description><![CDATA[ &lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;threadlocal，线程的本地变量&lt;/p&gt;
+&lt;h3 id=&#34;强软弱虚引用&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#强软弱虚引用&#34;&gt;#&lt;/a&gt; 强软弱虚引用&lt;/h3&gt;
+&lt;p&gt;了解 threadlocal 之前，就需要了解引用的类型，因为 threadlocal 用到了弱引用。&lt;/p&gt;
+&lt;p&gt;这边提一嘴 gc 的问题，gc 触发的时间根据 gc 算法（我记忆中目前能够理清楚的是这样）不同，gc 的时间点也不同，分 young 和 old gc，所以说这个 gc 触发的时候，你的引用有的是还在的，那么强引用就是 gc 不掉的，也就是还没出我的作用域呢，也就是还存活呢。那么对于软引用，空间满了，不管你还有没有在用呢，直接 gc。对于弱引用，只要 gc 触发看到了，不管满没满，直接 gc&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;强引用：对于 object o = new object (); 这样的 o 指向的引用就是强引用。&lt;/li&gt;
+&lt;li&gt;软引用：很少使用，但是有他的使用场景，对于特别大的图片，如果使用强引用，那么就很占地方，gc 不了，如果，用一下就给 gc 了，那么每次用都要 load，这样很耗时，所以软引用来了，只有当 jvm 堆空间满了，那么 gc 软引用。使用方法 softregerence&amp;lt;byte []&amp;gt; m = new softreference&amp;lt;&amp;gt;(new byte [1024&lt;em&gt;1024&lt;/em&gt;10]); 好像是套壳引用，也就是我要用个 byte 数组的时候，这个时候将它放在软引用的 new 里面。 那么这个 softreference 占不占空间呢，肯定站，但是估计是个空壳。&lt;/li&gt;
+&lt;li&gt;弱引用：weakreference，当遇到 gc 的时候，直接被回收。&lt;/li&gt;
+&lt;li&gt;虚引用：phantomreference，不咋用。特点就是你放在里面，get 是 get 不到的，但是弱引用只要没被回收还是能够 get 到的。他只有一个应用场景，堆外内存，零拷贝的起始点。也就是 java 里面有对象是关联着堆外的内存中的对象的，这个 java 里面的就用虚引用给他标记起来，然后有个专门的队列管理着这些虚引用，如果回收这个对象就需要将其关联的堆外内存也回收掉，不然就是内存泄漏。零拷贝和 NIO 都是用的虚引用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;threadlocal&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#threadlocal&#34;&gt;#&lt;/a&gt; threadlocal&lt;/h3&gt;
+&lt;p&gt;这边就来讲一下 threadlocal&lt;br&gt;
+&lt;img data-src=&#34;https://pic.imgdb.cn/item/65352e91c458853aefda70bb.jpg&#34; alt=&#34;&#34;&gt;&lt;br&gt;
+ 当线程中使用 threadlocal，放对象进去的时候，是往线程的 threadlocalmap 中存放 key 为 threadlocal，value 为放进去的对象的 entry。这个 entry 是继承的 weakreference，他的 key 是一个弱引用。&lt;/p&gt;
+&lt;p&gt;这么设计的好处就是，当有多个线程指向这个 threadlocal 的时候，如果不用了，那么就会 gc 掉，所以如果是强引用的话，那么将很难被 gc，因为这边不用了指不定有多少线程在用，这将造成 threadlocal 这块的内存泄漏。但是有另外的一个问题，就是现在这个 key 是弱引用，所以当我外面的强引用被 gc 掉之后，这个弱引用就指向 null 了，但是 value 是强引用，导致 value 回收不掉。所以使用完了需要使用 threadlocal 的 remove，这个会回收掉 key 为 null 的 entry。&lt;/p&gt;
+&lt;p&gt;这边注意一点，对于 entry 的 key 和 value 是分开回收的。&lt;/p&gt;
+ ]]></description>
+        </item>
+    </channel>
+</rss>

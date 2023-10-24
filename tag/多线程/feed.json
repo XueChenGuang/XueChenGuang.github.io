@@ -5,6 +5,16 @@
     "home_page_url": "http://example.com",
     "items": [
         {
+            "id": "http://example.com/2023/10/24/synchronized/",
+            "url": "http://example.com/2023/10/24/synchronized/",
+            "title": "synchronized",
+            "date_published": "2023-10-24T01:55:44.000Z",
+            "content_html": "<h3 id=\"写在前面\"><a class=\"markdownIt-Anchor\" href=\"#写在前面\">#</a> 写在前面</h3>\n<p>对于 synchronized 一直理解就那样，最近学到一点关于对象结构以及锁升级的具体详细的情况，做个记录</p>\n<h3 id=\"classlayout\"><a class=\"markdownIt-Anchor\" href=\"#classlayout\">#</a> classlayout</h3>\n<p>对于 object o = new object (); 具体的 jvm 内的情况就是刨去类加载不说，现在要说的是给对象在 jvm 堆中分配内存空间。然后线程栈帧中分配一个变量 o 指向堆中 new 出来的对象。那么这个堆中的对象到底是怎样一个情况呢。</p>\n<p><img data-src=\"https://pic.imgdb.cn/item/65372b89c458853aef883bbf.jpg\" alt=\"\"><br>\n大致的情况，上图就是一个对象的 layout，其中</p>\n<ul>\n<li>对象头，包括 mark word（8 字节）和 class pointer（开启压缩 4 字节，不开压缩 8 字节），如果是数组的话还会包括一个 4 字节的数组长度。所以说数组最大长度 2^32 -1; 最重要的就是 mark word 中的信息了，其中包括了锁信息以及 hashcode 信息（延迟加载）还有 gc 信息等。</li>\n<li>实例数据，如果有属性的话，就是属性字段，用到了父类的属性也有父类的信息</li>\n<li>空白填充，也就是 jvm 64 的要求，对象的开始必须是 8 字节的整数倍，所以需要填充</li>\n</ul>\n<h3 id=\"synchronized锁升级\"><a class=\"markdownIt-Anchor\" href=\"#synchronized锁升级\">#</a> synchronized 锁升级</h3>\n<p>在 1.6 之前，synchronized 是没有升级过程的，直接使用 mutex lock，互斥锁。也就是所谓的重量级锁。</p>\n<p>对于什么偏向锁，轻量级锁，重量级锁的概念，也就只有重量级锁才是真正的上锁，也就是将线程入队列，交给了 os 进行管理，会涉及到用户态和内核态的转化。其余的都相当于没上锁，也就是在用户态的层面完成了线程的同步管理。</p>\n<p>背景：当一个资源是共享资源的时候，那么如果在多线程的环境下我们需要保证线程安全的话也就是满足线程三要素，那么就可以通过 synchronized 完成，所以说这个背景是已经加上了 synchronized 字段了。那么改进了一上来就重量级锁的情况，四个状态出现了。</p>\n<ul>\n<li>无锁，001，也就是没有线程用到这个资源的时候，这个对象 mark word 中的锁信息</li>\n<li>当有线程要用到的时候，A 线程看到 01，并且前面是 0，那么上偏向锁，通过 cas 的方式将其中的 0 改成 1，并且将自己的 threadid 给放到前面去（当前线程指针）。这边说一下为什么要 cas，因为可能有多个线程同时看到 01，然后去修改，那么这时候是存在竞争的（隐式竞争），所以只要修改资源，就 cas 活锁。</li>\n<li>那么 B 线程看到了 101，需要再看看前面的 threadid 是不是自己，如果不是的话，锁升级 00，轻量级锁。这边的细节就是前面的指针信息换了，换成了每个线程在自己的线程栈中生成一条 lock record，然后将对象头中的前面的字段指向 lock record，完成上锁（至于这边也是有疑问的，为什么还不是直接用各自的 threadid），其实也是没锁的，就是上个字段。</li>\n<li>如果 00 锁，cas 自选到一定程度，10 次？那么锁升级，线程入队直接交给 os 处理，并且其中的锁信息也是换成了真正的锁 monitor，通过加上 monitor enter 和 monitor exit 来完成整段的汇编指令。</li>\n</ul>\n<p>其中应该是有 cas 自旋优化的，也就是 epoch 字段，但是不了解，大致的说法貌似式如果上次通过 cas 获取到了锁，那么这次就延长 cas 的时间，如果上次 cas 没有获取到，那么缩短。但是疑问就是没有 cas 到不就锁升级了么，不知道怎么事他娘的。</p>\n<h3 id=\"总结\"><a class=\"markdownIt-Anchor\" href=\"#总结\">#</a> 总结</h3>\n<p>大致的一整个 synchronized 就结束了，目前感觉挺通透的。</p>\n",
+            "tags": [
+                "多线程"
+            ]
+        },
+        {
             "id": "http://example.com/2023/10/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E5%A4%A7%E7%89%B9%E6%80%A7/",
             "url": "http://example.com/2023/10/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E5%A4%A7%E7%89%B9%E6%80%A7/",
             "title": "多线程的三大特性",

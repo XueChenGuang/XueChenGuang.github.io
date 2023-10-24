@@ -3,7 +3,7 @@
     <id>http://example.com</id>
     <title>该死的秋招</title>
     <link href="http://example.com" />
-    <updated>2023-10-16T13:02:59.000Z</updated>
+    <updated>2023-10-24T02:52:52.000Z</updated>
     <category term="hello blog" />
     <category term="设计模式" />
     <category term="MySQL" />
@@ -21,6 +21,155 @@
     <category term="多线程" />
     <category term="kafka" />
     <category term="SpringBoot" />
+    <category term="JUC相关零碎知识点乱写" />
+    <category term="hashmap" />
+    <category term="JUC" />
+    <entry>
+        <id>http://example.com/2023/10/24/cas/</id>
+        <title>cas</title>
+        <link rel="alternate" href="http://example.com/2023/10/24/cas/"/>
+        <content type="html"></content>
+        <updated>2023-10-24T02:52:52.000Z</updated>
+    </entry>
+    <entry>
+        <id>http://example.com/2023/10/24/synchronized/</id>
+        <title>synchronized</title>
+        <link rel="alternate" href="http://example.com/2023/10/24/synchronized/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;对于 synchronized 一直理解就那样，最近学到一点关于对象结构以及锁升级的具体详细的情况，做个记录&lt;/p&gt;
+&lt;h3 id=&#34;classlayout&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#classlayout&#34;&gt;#&lt;/a&gt; classlayout&lt;/h3&gt;
+&lt;p&gt;对于 object o = new object (); 具体的 jvm 内的情况就是刨去类加载不说，现在要说的是给对象在 jvm 堆中分配内存空间。然后线程栈帧中分配一个变量 o 指向堆中 new 出来的对象。那么这个堆中的对象到底是怎样一个情况呢。&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://pic.imgdb.cn/item/65372b89c458853aef883bbf.jpg&#34; alt=&#34;&#34;&gt;&lt;br&gt;
+大致的情况，上图就是一个对象的 layout，其中&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;对象头，包括 mark word（8 字节）和 class pointer（开启压缩 4 字节，不开压缩 8 字节），如果是数组的话还会包括一个 4 字节的数组长度。所以说数组最大长度 2^32 -1; 最重要的就是 mark word 中的信息了，其中包括了锁信息以及 hashcode 信息（延迟加载）还有 gc 信息等。&lt;/li&gt;
+&lt;li&gt;实例数据，如果有属性的话，就是属性字段，用到了父类的属性也有父类的信息&lt;/li&gt;
+&lt;li&gt;空白填充，也就是 jvm 64 的要求，对象的开始必须是 8 字节的整数倍，所以需要填充&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;synchronized锁升级&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#synchronized锁升级&#34;&gt;#&lt;/a&gt; synchronized 锁升级&lt;/h3&gt;
+&lt;p&gt;在 1.6 之前，synchronized 是没有升级过程的，直接使用 mutex lock，互斥锁。也就是所谓的重量级锁。&lt;/p&gt;
+&lt;p&gt;对于什么偏向锁，轻量级锁，重量级锁的概念，也就只有重量级锁才是真正的上锁，也就是将线程入队列，交给了 os 进行管理，会涉及到用户态和内核态的转化。其余的都相当于没上锁，也就是在用户态的层面完成了线程的同步管理。&lt;/p&gt;
+&lt;p&gt;背景：当一个资源是共享资源的时候，那么如果在多线程的环境下我们需要保证线程安全的话也就是满足线程三要素，那么就可以通过 synchronized 完成，所以说这个背景是已经加上了 synchronized 字段了。那么改进了一上来就重量级锁的情况，四个状态出现了。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;无锁，001，也就是没有线程用到这个资源的时候，这个对象 mark word 中的锁信息&lt;/li&gt;
+&lt;li&gt;当有线程要用到的时候，A 线程看到 01，并且前面是 0，那么上偏向锁，通过 cas 的方式将其中的 0 改成 1，并且将自己的 threadid 给放到前面去（当前线程指针）。这边说一下为什么要 cas，因为可能有多个线程同时看到 01，然后去修改，那么这时候是存在竞争的（隐式竞争），所以只要修改资源，就 cas 活锁。&lt;/li&gt;
+&lt;li&gt;那么 B 线程看到了 101，需要再看看前面的 threadid 是不是自己，如果不是的话，锁升级 00，轻量级锁。这边的细节就是前面的指针信息换了，换成了每个线程在自己的线程栈中生成一条 lock record，然后将对象头中的前面的字段指向 lock record，完成上锁（至于这边也是有疑问的，为什么还不是直接用各自的 threadid），其实也是没锁的，就是上个字段。&lt;/li&gt;
+&lt;li&gt;如果 00 锁，cas 自选到一定程度，10 次？那么锁升级，线程入队直接交给 os 处理，并且其中的锁信息也是换成了真正的锁 monitor，通过加上 monitor enter 和 monitor exit 来完成整段的汇编指令。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;其中应该是有 cas 自旋优化的，也就是 epoch 字段，但是不了解，大致的说法貌似式如果上次通过 cas 获取到了锁，那么这次就延长 cas 的时间，如果上次 cas 没有获取到，那么缩短。但是疑问就是没有 cas 到不就锁升级了么，不知道怎么事他娘的。&lt;/p&gt;
+&lt;h3 id=&#34;总结&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#总结&#34;&gt;#&lt;/a&gt; 总结&lt;/h3&gt;
+&lt;p&gt;大致的一整个 synchronized 就结束了，目前感觉挺通透的。&lt;/p&gt;
+</content>
+        <category term="多线程" />
+        <updated>2023-10-24T01:55:44.000Z</updated>
+    </entry>
+    <entry>
+        <id>http://example.com/2023/10/23/volatile/</id>
+        <title>volatile</title>
+        <link rel="alternate" href="http://example.com/2023/10/23/volatile/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;对于 volatile，很神奇，玛德，感觉懂了，但是每次一回想总感觉差点什么。&lt;/p&gt;
+&lt;h3 id=&#34;缓存行&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#缓存行&#34;&gt;#&lt;/a&gt; 缓存行&lt;/h3&gt;
+&lt;p&gt;缓存行也是最近刚刷新的一个概念，对于线程来说，都会将内存中的数据缓存到各自的缓存中，也就是所谓的 cache。那么这个 cache 是怎么读取的呢，一行 64 字节，所以如果需要读取的变量在这一行上，那么就会将这一整行读进来，也就是说 cache 读取的最小单位是 64 字节。&lt;/p&gt;
+&lt;h3 id=&#34;缓存一致性&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#缓存一致性&#34;&gt;#&lt;/a&gt; 缓存一致性&lt;/h3&gt;
+&lt;p&gt;那么如何保证缓存一致性呢？&lt;br&gt;
+有一种现象，两个线程，读取了同一个缓存行，两个都对这个缓存行上的数据进行了修改，那么当一个修改完了，没有通知另一个的时候，这个时候就出现了不一致的问题，也就是经典的多线程的问题。&lt;/p&gt;
+&lt;h3 id=&#34;volatile&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#volatile&#34;&gt;#&lt;/a&gt; volatile&lt;/h3&gt;
+&lt;p&gt;引入今天的主角，volatile&lt;br&gt;
+volatile 有两个特性，可见性和一致性（多线程三大特性，满足两个），那么是如何保证的呢。个人感觉说这两个特性有点抽象，其实 volatile 干的事就是强制走主存并且禁止指令重排（加入了内存屏障 ss 写 sl； ll 读 ls）&lt;/p&gt;
+&lt;p&gt;volatile 的规范有这两个，当读取 volatile 的时候必须从主存中进行读取（也就是跨过缓存，读主存，然后将主存中的数据再读到缓存中来），修改完 volatile 变量后同步到主存中。但是像 i++ 这样需要读取，然后再赋值的情况，volatile 就解决不了。&lt;/p&gt;
+&lt;p&gt;为什么解决不了呢，网上有从 cpu 的结构出发的 cpu 包括 pc 寄存器 以及 alu；有个说法是读取 m 的值到寄存器中了，那么这个 m 值发生变化的话，只会影响到 cpu 缓存并不会干涉到寄存器，所以 invalid 就不行。另外一个说的是虽然读到了，但是执行了 + 1 操作，这个时候进行 store，是不会进行重新读取的，如果没有进行 + 1 操作，那么 m 值 invalid 之后还是会进行重新读取的。&lt;/p&gt;
+&lt;p&gt;目前个人更偏向于后者，前者感觉有点问题，但也说不出哪里有问题 hhhh&lt;/p&gt;
+&lt;p&gt;但是看到了一个很有意思的评论：线程安全是由这三大问题导致的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;cpu 缓存引起的可见性问题，缓存与主存&lt;/li&gt;
+&lt;li&gt;cpu 指令重排，引起的顺序问题&lt;/li&gt;
+&lt;li&gt;cpu 切换，线程中断引起的原子性问题，也就是 cpu 切换&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+        <category term="JUC" />
+        <updated>2023-10-23T03:05:46.000Z</updated>
+    </entry>
+    <entry>
+        <id>http://example.com/2023/10/22/threadlocal/</id>
+        <title>threadlocal</title>
+        <link rel="alternate" href="http://example.com/2023/10/22/threadlocal/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;threadlocal，线程的本地变量&lt;/p&gt;
+&lt;h3 id=&#34;强软弱虚引用&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#强软弱虚引用&#34;&gt;#&lt;/a&gt; 强软弱虚引用&lt;/h3&gt;
+&lt;p&gt;了解 threadlocal 之前，就需要了解引用的类型，因为 threadlocal 用到了弱引用。&lt;/p&gt;
+&lt;p&gt;这边提一嘴 gc 的问题，gc 触发的时间根据 gc 算法（我记忆中目前能够理清楚的是这样）不同，gc 的时间点也不同，分 young 和 old gc，所以说这个 gc 触发的时候，你的引用有的是还在的，那么强引用就是 gc 不掉的，也就是还没出我的作用域呢，也就是还存活呢。那么对于软引用，空间满了，不管你还有没有在用呢，直接 gc。对于弱引用，只要 gc 触发看到了，不管满没满，直接 gc&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;强引用：对于 object o = new object (); 这样的 o 指向的引用就是强引用。&lt;/li&gt;
+&lt;li&gt;软引用：很少使用，但是有他的使用场景，对于特别大的图片，如果使用强引用，那么就很占地方，gc 不了，如果，用一下就给 gc 了，那么每次用都要 load，这样很耗时，所以软引用来了，只有当 jvm 堆空间满了，那么 gc 软引用。使用方法 softregerence&amp;lt;byte []&amp;gt; m = new softreference&amp;lt;&amp;gt;(new byte [1024&lt;em&gt;1024&lt;/em&gt;10]); 好像是套壳引用，也就是我要用个 byte 数组的时候，这个时候将它放在软引用的 new 里面。 那么这个 softreference 占不占空间呢，肯定站，但是估计是个空壳。&lt;/li&gt;
+&lt;li&gt;弱引用：weakreference，当遇到 gc 的时候，直接被回收。&lt;/li&gt;
+&lt;li&gt;虚引用：phantomreference，不咋用。特点就是你放在里面，get 是 get 不到的，但是弱引用只要没被回收还是能够 get 到的。他只有一个应用场景，堆外内存，零拷贝的起始点。也就是 java 里面有对象是关联着堆外的内存中的对象的，这个 java 里面的就用虚引用给他标记起来，然后有个专门的队列管理着这些虚引用，如果回收这个对象就需要将其关联的堆外内存也回收掉，不然就是内存泄漏。零拷贝和 NIO 都是用的虚引用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;threadlocal&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#threadlocal&#34;&gt;#&lt;/a&gt; threadlocal&lt;/h3&gt;
+&lt;p&gt;这边就来讲一下 threadlocal&lt;br&gt;
+&lt;img data-src=&#34;https://pic.imgdb.cn/item/65352e91c458853aefda70bb.jpg&#34; alt=&#34;&#34;&gt;&lt;br&gt;
+ 当线程中使用 threadlocal，放对象进去的时候，是往线程的 threadlocalmap 中存放 key 为 threadlocal，value 为放进去的对象的 entry。这个 entry 是继承的 weakreference，他的 key 是一个弱引用。&lt;/p&gt;
+&lt;p&gt;这么设计的好处就是，当有多个线程指向这个 threadlocal 的时候，如果不用了，那么就会 gc 掉，所以如果是强引用的话，那么将很难被 gc，因为这边不用了指不定有多少线程在用，这将造成 threadlocal 这块的内存泄漏。但是有另外的一个问题，就是现在这个 key 是弱引用，所以当我外面的强引用被 gc 掉之后，这个弱引用就指向 null 了，但是 value 是强引用，导致 value 回收不掉。所以使用完了需要使用 threadlocal 的 remove，这个会回收掉 key 为 null 的 entry。&lt;/p&gt;
+&lt;p&gt;这边注意一点，对于 entry 的 key 和 value 是分开回收的。&lt;/p&gt;
+</content>
+        <category term="JUC" />
+        <updated>2023-10-22T08:08:16.000Z</updated>
+    </entry>
+    <entry>
+        <id>http://example.com/2023/10/21/JUC%E7%9B%B8%E5%85%B3%E9%9B%B6%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9%E4%B9%B1%E5%86%99/</id>
+        <title>JUC</title>
+        <link rel="alternate" href="http://example.com/2023/10/21/JUC%E7%9B%B8%E5%85%B3%E9%9B%B6%E7%A2%8E%E7%9F%A5%E8%AF%86%E7%82%B9%E4%B9%B1%E5%86%99/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;其实最近也比较浮躁，所以就开始刷一些视频，看 blog 或者书籍，有点看不下去。选择看什么视频的时候，就想到了一直在看，但是总感觉没有懂的 JUC，然后就慢慢的深入，从 java 的 JUC 的底层，从加锁不同的锁到 cas，然后 aqs，然后就是一堆 JUC 工具包对 aqs 的实现，然后还是很摸棱两可，到底会不会，如会，，，懂不懂，如懂，，，玛德，所以有些小无奈，知道今天特么看到了马士兵的教学视频，特么感觉问题点应该是出在操作系统这一块，他讲了一个虽然我一直知道，但是到那一刻才豁然的学习道理，先大再小。我反思了&lt;/p&gt;
+&lt;p&gt;我一直以为我都是先大后小，先整体再细节，先大的模块再深入分解，但是我好像对于操作系统这块，线程是怎么和底层的资源进行交互的这块，并没有加入到整体的框架中来，也就是并不完整。所以我的深入就会令我不时的产生疑惑。&lt;/p&gt;
+&lt;p&gt;他讲到了一个点：app 也就是所谓的软件是完全可以和硬件打交道的，也就是我们可以直接将软件建立在硬件之上（个人理解就是汇编咯，也不是说其他的语言不可以，如果可以的话估计名字就得换了），比如我们的 java，他是建立在 jvm 之上，又建立在操作系统之上然后再去接触硬件的。这也就是涉及到了历史的发展，刚开始确实是这么干的，但是 bug 频繁的触发，然后诞生了一个中间的软件 OS，也就是你们都太垃圾了，我来干硬件，然后我提供接口给你们，你们来干我，这样难度小一点。特么的真有道理，所以我们现在的软件都建立在操作系统之上。&lt;/p&gt;
+&lt;p&gt;然后再来一条路，就是 JVM 这条路，可以理解 JVM 就是一个 app，当然了他只是一种规范，实现有很多种方法，最熟悉的 hotspot 就是我们常用的 JVM。这也是最近刚豁然的一个点，JVM 内存模型中有两个栈，虚拟机栈和 native 本地栈，当时一直不懂为什么要分两个。后来才明白本地栈就是对本地方法的调用，但是其实还是没懂，为什么这么说呢。&lt;/p&gt;
+&lt;p&gt;因为啊，当看 JVM 底层对于 juc 的实现，其中 compareandswap 是 unsafe 这个类的方法，这个呢就是一个本地方法，这个是用 c&lt;ins&gt; 写的，也是 hotspot 虚拟机的实现里才能看间源码的，他的底层有一个 cmandchange 方法，这个呢就是涉及到汇编了貌似或者说还是 c&lt;/ins&gt; 不是很懂。这里就突然想到我们下载无论什么 app 都有版本什么 x86，linux，windows，ios，这里才明白，这就是上层软件的实现对于操作系统的调用，所以不同的操作系统这一块的实现都是不同的。&lt;/p&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://pic.imgdb.cn/item/6533dbedc458853aefd86a15.jpg&#34; alt=&#34;&#34;&gt;&lt;br&gt;
+记录一下对于 static 和 volatile 的区别，也就是所谓的可见性的问题&lt;br&gt;
+我们所了解到的，static 静态变量在 1.8 的时候被移到了堆中，那么无论是堆还是方法区都是线程间共享的。这里，第一次刷新了我的认知，也是错误的认知&lt;/p&gt;
+&lt;p&gt;我们知道局部变量，也就是方法中的，那么是在线程栈里面的，也就是出栈就销毁的，也就是没有所谓的 gc。并且局部，也代表着没有所谓的共享，那么就是多线程是读不到的，也就是局部变量不允许被共享，他们是被分配在栈帧中的。有趣的来了&lt;br&gt;
+我以前从未这样用过 static 或者 volatile，也就是在类的方法中声明 static 或者 volatile 变量，今天试了一下，直接报错，这意味着什么！！&lt;/p&gt;
+&lt;p&gt;这意味着我将局部变量，分配在栈帧中的变量，尝试着给他拉到堆中，这本身就不可能。所以 checked exception 直接报错。&lt;/p&gt;
+&lt;p&gt;接着就是我改变了这个认知，只有 static 静态变量，类级别的成员变量才有可能被线程可见，因为他们是堆中的，他们本身的属性是共享属性。也就是他们出了栈帧还能存活。来了，也就是今天刚弄懂的 static 和 volatile&lt;/p&gt;
+&lt;p&gt;static 只是允许多线程读取，可见性的意思也并不是 “可读”，而是一个线程修改了，那么其他的线程能够立刻获取到其被修改了的信息。所以 static 只是保证了可读，多个线程可以读这个变量，可以拷贝过去，什么时候刷到主存呢，不确定。上面那个图很神奇，是我做的一个实验，也就是 static 变量，修改看能不能读取到，确实是可以的，但是如果循环体中没有语句的话，是不会读取到的，应该是底层做了优化了，也就是没有循环体的话，我就不会去主存中读取这个 static 变量，那么久不会检测到这个变量被修改了，很离谱就是，幸亏看到网上有说，然后我加了个循环体，然后就能退出循环了。证明了 static 变量在多线程之间是可以读取到的。&lt;/p&gt;
+&lt;p&gt;这边涉及到一个概念，锁缓存行，锁总线，挺神奇的。在我们正常的理解下面，是一个线程修改了数据，因为读取缓存是以行为单位读取的，那么如果缓存一致性的情况下，另外一个线程也获取到了这块缓存行里面的数据，那么就需要通知了。所以说有的为了避免通知，也就是减少同步，就使用了缓存行对齐。&lt;/p&gt;
+&lt;p&gt;缓存行：64 字节，long 8 字节，那么对其 long 的话，就前后各放 7 个无关的常量 long 即可，如果 x，y 在一个缓存行里面，那么一个线程读了 x，另一个读了 y。如果修改了其中一个，那么就需要通知另外一个线程更新这个缓存行，这样保证了缓存一致。如果 x，y 在两行，那么修改就不要通知另外一个线程。&lt;/p&gt;
+&lt;p&gt;如果需要对不同行进行加锁，那么就需要锁总线&lt;/p&gt;
+&lt;h3 id=&#34;cpu&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#cpu&#34;&gt;#&lt;/a&gt; CPU&lt;/h3&gt;
+&lt;p&gt;这里感觉要说一下 CPU 的构成，CPU 又称处理器，主要就是有几个构成 ALU，PC，Register，以及 cache。&lt;/p&gt;
+&lt;p&gt;从 java 代码出发，到字节码文件，到一条条指令，ok，然后 CPU 负责将一条指令读到 Register 里面，PC 定位读到了哪边，然后 ALU 执行相关的逻辑。因为 cpu 是与内存进行交互的，但是 cpu 很快，读取的速度很慢 1：100；与硬盘差不多 1：一百万。所以就加入了 cache，那么这个 chache 也有很多层级，最常见的就是三层，最慢的就是主存了，这边的话后面再说，为什么要说缓存分层呢，因为一层和二层是在 cpu 里面的。&lt;/p&gt;
+&lt;p&gt;这就有了单核双线程的说法，ALU 速度很快，那么每次线程的上下文切换都会将指令以及 PC 信息存起来，然后切换，俗称上下文切换，这个消耗也很大。那么双线程就是说两对 PC+Register，那么只需要让 ALU 换个读就完事了，上下文切换的话，当涉及到两个以上线程再进行。那么为什么不是三个，四个等，估计也是个实验数据，估计多了的话效率应该也不是线性增长的。&lt;/p&gt;
+&lt;p&gt;这边还涉及到一个概念就是 CPU 与内存之间的 I/O 叫做总线，锁可以加在总线上。&lt;/p&gt;
+&lt;h3 id=&#34;volatile&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#volatile&#34;&gt;#&lt;/a&gt; volatile&lt;/h3&gt;
+&lt;p&gt;这个关键字涉及到很多概念，其中可见性和禁止重排来保证一致性&lt;/p&gt;
+</content>
+        <category term="JUC相关零碎知识点乱写" />
+        <updated>2023-10-21T03:56:44.000Z</updated>
+    </entry>
+    <entry>
+        <id>http://example.com/2023/10/17/hashmap%E7%BB%8F%E5%85%B8%E9%9D%A2%E8%AF%95%E9%A2%98/</id>
+        <title>hashmap经典面试题</title>
+        <link rel="alternate" href="http://example.com/2023/10/17/hashmap%E7%BB%8F%E5%85%B8%E9%9D%A2%E8%AF%95%E9%A2%98/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;因为要面亚信安全，所以看了一下面经，有个问了一堆 hashmap 的问题，刚开始还有点懵，但是查了相关资料之后才发现这些内容都会，只是被问题吓住了。话不多说，直接总结一下&lt;/p&gt;
+&lt;h3 id=&#34;hashmap&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#hashmap&#34;&gt;#&lt;/a&gt; hashmap&lt;/h3&gt;
+&lt;p&gt;非常经典的数据结构，基本开发必然是要用到的。&lt;/p&gt;
+&lt;p&gt;底层数据结构是 hash 表，也就是所有的类型数据都可以转换为一个二进制数，然后映射到指定长度的数组中。&lt;/p&gt;
+&lt;p&gt;经典的就是初始容量 16，扩容因子 0.75，也就是达到容量的 3/4 就开始扩容，扩容是 * 2，都是 2 的次幂。这个有说法，貌似是底层要进行与运算，具体没了解。&lt;/p&gt;
+&lt;p&gt;对于 jdk1.7 之前，使用的头插法，但是在多线程触发扩容的时候会出现死循环，后面 1.8 转为尾插法，具体为什么尾插法就可以消除循环连，没什么研究，毕竟多线程建议使用 concurrenthashmap。&lt;/p&gt;
+&lt;p&gt;具体为什么会出现循环链，是因为多线程情况下，在 1 执行完 e.next = newtable [i] 后，即将执行 newtable [i] = e 的时候，第二个线程完成了扩容，那么这个时候线程 1 继续往下执行的时候，就会出现修改成循环练的情况，所以 get 的时候就会出现死循环。&lt;/p&gt;
+&lt;p&gt;还有就是 hashmap 的 put 过程吧，hash 映射，冲突的话就执行 hash 冲突的算法，hashmap 是链式的，也就是给桶上链表，如果 key 存在的话，就替换 value 值。&lt;/p&gt;
+&lt;p&gt;对于线程安全，hashtable 和 concurrenthashmap 都安全，但是基本不怎么用 hahstable，反正我是没用过，hashtable 是不支持 key 和 value 为 null 的，但是 hashmap 可以。&lt;/p&gt;
+&lt;p&gt;接下来就说一说 concurrenthashmap，1.7 是使用的 segment 分段锁，segment 继承 reentrantlock，对每一端的访问进行加锁，这应该就是比 hashtable 高效的地方吧，hashtable 是对整个 table 进行上锁的。&lt;/p&gt;
+&lt;p&gt;1.8 之后就换成了 cas+synchronized，并且 segment 也取消了，改成了桶上锁，也就是桶可以理解为同一个 hash 值，也就是存放链表的地方，对这个进行加锁，也就是细化了 segment&lt;/p&gt;
+&lt;p&gt;对于 cas 的使用我记得是在 put 的时候没有元素的情况下进行 cas 赋初值，如果有值也就是发生 hash 冲突的情况下就转为 synchronized 进行上锁。（对于比较复杂的场景，hash 冲突和扩容，就用 synchronized 进行上锁，其余的用 cas 来解决冲突问题）&lt;/p&gt;
+&lt;p&gt;个人理解什么 entry 数组 + segment + 链表，我理解就是对数组的段分为了 segment，其实就是比数组 + 链表多了个 segment 而已&lt;/p&gt;
+&lt;p&gt;后面转红黑树，也就是涉及到红黑树的转换情况，将链表转为红黑树的场景要满足两点：1，一条练上的节点 &amp;gt;=8；2，容量大于 &amp;gt;=64；从红黑树退化为链表是元素 &amp;lt;=6&lt;/p&gt;
+</content>
+        <category term="hashmap" />
+        <updated>2023-10-17T13:09:09.000Z</updated>
+    </entry>
     <entry>
         <id>http://example.com/2023/10/16/SpringBoot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/</id>
         <title>SpringBoot自动装配</title>
@@ -54,6 +203,8 @@
 &lt;h3 id=&#34;如何保证消息不丢失&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何保证消息不丢失&#34;&gt;#&lt;/a&gt; 如何保证消息不丢失&lt;/h3&gt;
 &lt;p&gt;&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC80NTk2MTA0MTg=&#34;&gt;https://zhuanlan.zhihu.com/p/459610418&lt;/span&gt;&lt;br&gt;
  这篇写挺好的&lt;/p&gt;
+&lt;h3 id=&#34;如何实现高效读写的&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何实现高效读写的&#34;&gt;#&lt;/a&gt; 如何实现高效读写的&lt;/h3&gt;
+&lt;p&gt;页缓存 page cache（操作系统级的缓存） + 顺序写（通过末尾追加的方式写入数据） + 零拷贝（如果不做任何处理就是磁盘 - os cache - 应用缓存 - socket 缓存 - 网卡发送） 零拷贝就去掉了冗余的拷贝过程，直接让 socket 与网卡交互，socket 缓存了数据的描述，具体的数据直接通过 os cache 发送给网卡&lt;/p&gt;
 </content>
         <category term="kafka" />
         <updated>2023-10-12T13:06:00.000Z</updated>
@@ -180,7 +331,7 @@ gc 有很多的类型，minor gc、major gc 和 full gc 这三种吧；但是大
  serial, p new, parallel 都是针对年轻代的&lt;br&gt;
  serial old, parallel old 都是针对老年代的，都是一整个 stw&lt;br&gt;
  然而对于 cms 和 g1 来说，是有四个阶段的，初始标记和重复标记需要 stw，并且 g1 的最后一个清理阶段也是要 stw 的，总结来说就是 cms 有两个 stw，但是 g1 有三个。那么为什么说 g1 改进了 cms 呢&lt;/p&gt;
-&lt;p&gt;这个也有几点说法，一个就是 g1 的内存不在连续了，而是用的分块 partition，并且由于使用的是复制删除，所以需要 stw 来进行类的内存整合，但是 cms 用的是标记删除，所以 cms 会有内存碎片的问题，有内存碎片就可能触发 full gc&lt;/p&gt;
+&lt;p&gt;这个也有几点说法，一个就是 g1 的内存不在连续了，而是用的大小相同的区域 region，并且由于使用的是复制删除，所以需要 stw 来进行类的内存整合，但是 cms 用的是标记删除，所以 cms 会有内存碎片的问题，有内存碎片就可能触发 full gc&lt;/p&gt;
 &lt;p&gt;这边有了新的理解，也就是对于 cms 和 g1 来说都是 major gc，也就是针对老年代的，但是在 cms 和 g1 触发期间，如果老年代不足了，那么就会触发 full gc，也就是全清，暂时下面先不讲了&lt;/p&gt;
 &lt;p&gt;直接说元空间对于永久代的改进，我感觉就是从根本上来说的话，就是元空间实现在了本地内存上，而跟 jvm 内存隔离开来了，网上有说元空间会触发 full gc，我觉得不正确，奶奶的，那特么这个隔离开来还有什么几把用，超，迷惑我一下午，我觉得隔离开来，就不会使用 jvm 那一套回收机制了，而是使用操作系统的一套回收机制，但是 jvm 仍然可以通过参数来限制元空间&lt;br&gt;
 这就显得元空间和永久代的区别很明显了，首先对于 full gc，之前永久代和堆是连续的内存空间，也就是在 jvm 的物理内存中是连续的，属于是逻辑上的隔离，但是这就会对 gc 带来难度，并且永久代中存的是有关类的数据，gc 效率不高，因为回收一个类的条件过于苛刻了。第二个就是内存了，元空间移到了本地内存上面，本地内存多大我多大，可以灵活调整，而不是永久代那样，一旦限定就不好改了，并且也没人能够很准确的估算出给出合适的永久代内存空间，所以，总结下来就两点我认为最重要：&lt;/p&gt;
@@ -590,6 +741,7 @@ gc 有很多的类型，minor gc、major gc 和 full gc 这三种吧；但是大
 &lt;figure class=&#34;highlight java&#34;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&#34;gutter&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;20&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#34;code&#34;&gt;&lt;pre&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;keyword&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;keyword&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;title class_&#34;&gt;Solution&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;private&lt;/span&gt; &lt;span class=&#34;type&#34;&gt;int&lt;/span&gt; a;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;private&lt;/span&gt; String b;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;private&lt;/span&gt; &lt;span class=&#34;type&#34;&gt;char&lt;/span&gt;[] c;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;meta&#34;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;type&#34;&gt;boolean&lt;/span&gt; &lt;span class=&#34;title function_&#34;&gt;equals&lt;/span&gt;&lt;span class=&#34;params&#34;&gt;(Object o)&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        &lt;span class=&#34;keyword&#34;&gt;if&lt;/span&gt; (&lt;span class=&#34;built_in&#34;&gt;this&lt;/span&gt; == o) &lt;span class=&#34;keyword&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;literal&#34;&gt;true&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        &lt;span class=&#34;keyword&#34;&gt;if&lt;/span&gt; (o == &lt;span class=&#34;literal&#34;&gt;null&lt;/span&gt; || getClass() != o.getClass()) &lt;span class=&#34;keyword&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;literal&#34;&gt;false&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        &lt;span class=&#34;type&#34;&gt;Solution&lt;/span&gt; &lt;span class=&#34;variable&#34;&gt;other&lt;/span&gt; &lt;span class=&#34;operator&#34;&gt;=&lt;/span&gt; (Solution) o;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        &lt;span class=&#34;keyword&#34;&gt;return&lt;/span&gt; a == other.a &amp;amp;&amp;amp; Objects.equals(b, other.b) &amp;amp;&amp;amp; Arrays.equals(c, other.c);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;meta&#34;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &lt;span class=&#34;keyword&#34;&gt;public&lt;/span&gt; &lt;span class=&#34;type&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;title function_&#34;&gt;hashCode&lt;/span&gt;&lt;span class=&#34;params&#34;&gt;()&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        &lt;span class=&#34;type&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;variable&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;operator&#34;&gt;=&lt;/span&gt; Objects.hash(a, b);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        result = &lt;span class=&#34;number&#34;&gt;31&lt;/span&gt; * result + Arrays.hashCode(c);&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;        &lt;span class=&#34;keyword&#34;&gt;return&lt;/span&gt; result;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&#34;line&#34;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;其实也没啥好讲的，直接从两个函数分开讲吧。&lt;/p&gt;
 &lt;p&gt;首先，hashcode 相等，两个对象不一定相等。equals 相等，hashcode 一定要想等。我们一般重写这两个的目的，就是为了去重，合理的判断两个自定义的对象是否相等。&lt;/p&gt;
+&lt;p&gt;对于两者要同时重写，更多的感觉就是 hashcode 的重写是为了更快的判断 equals，因为如果 hashcode 都不相同，那么就不用 equals 进行判断了。第二个就是使用 hash，就需要使用 hashcode 来进行散列，所以 hashcode 很关键。&lt;/p&gt;
 &lt;h3 id=&#34;equals&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#equals&#34;&gt;#&lt;/a&gt; equals&lt;/h3&gt;
 &lt;p&gt;主要就是四步：&lt;br&gt;
 第一步，看看是否同一对象，是的话还判断啥，直接 true。&lt;br&gt;

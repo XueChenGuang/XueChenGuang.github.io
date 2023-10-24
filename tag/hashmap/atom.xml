@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>http://example.com</id>
+    <title>该死的秋招 • Posts by &#34;hashmap&#34; tag</title>
+    <link href="http://example.com" />
+    <updated>2023-10-17T13:09:09.000Z</updated>
+    <category term="hello blog" />
+    <category term="设计模式" />
+    <category term="MySQL" />
+    <category term="算法" />
+    <category term="Redis" />
+    <category term="其他" />
+    <category term="分布式" />
+    <category term="数据结构" />
+    <category term="Spring" />
+    <category term="Thread" />
+    <category term="Java" />
+    <category term="JDK" />
+    <category term="SQL" />
+    <category term="JVM" />
+    <category term="多线程" />
+    <category term="kafka" />
+    <category term="SpringBoot" />
+    <category term="JUC相关零碎知识点乱写" />
+    <category term="hashmap" />
+    <category term="JUC" />
+    <entry>
+        <id>http://example.com/2023/10/17/hashmap%E7%BB%8F%E5%85%B8%E9%9D%A2%E8%AF%95%E9%A2%98/</id>
+        <title>hashmap经典面试题</title>
+        <link rel="alternate" href="http://example.com/2023/10/17/hashmap%E7%BB%8F%E5%85%B8%E9%9D%A2%E8%AF%95%E9%A2%98/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;因为要面亚信安全，所以看了一下面经，有个问了一堆 hashmap 的问题，刚开始还有点懵，但是查了相关资料之后才发现这些内容都会，只是被问题吓住了。话不多说，直接总结一下&lt;/p&gt;
+&lt;h3 id=&#34;hashmap&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#hashmap&#34;&gt;#&lt;/a&gt; hashmap&lt;/h3&gt;
+&lt;p&gt;非常经典的数据结构，基本开发必然是要用到的。&lt;/p&gt;
+&lt;p&gt;底层数据结构是 hash 表，也就是所有的类型数据都可以转换为一个二进制数，然后映射到指定长度的数组中。&lt;/p&gt;
+&lt;p&gt;经典的就是初始容量 16，扩容因子 0.75，也就是达到容量的 3/4 就开始扩容，扩容是 * 2，都是 2 的次幂。这个有说法，貌似是底层要进行与运算，具体没了解。&lt;/p&gt;
+&lt;p&gt;对于 jdk1.7 之前，使用的头插法，但是在多线程触发扩容的时候会出现死循环，后面 1.8 转为尾插法，具体为什么尾插法就可以消除循环连，没什么研究，毕竟多线程建议使用 concurrenthashmap。&lt;/p&gt;
+&lt;p&gt;具体为什么会出现循环链，是因为多线程情况下，在 1 执行完 e.next = newtable [i] 后，即将执行 newtable [i] = e 的时候，第二个线程完成了扩容，那么这个时候线程 1 继续往下执行的时候，就会出现修改成循环练的情况，所以 get 的时候就会出现死循环。&lt;/p&gt;
+&lt;p&gt;还有就是 hashmap 的 put 过程吧，hash 映射，冲突的话就执行 hash 冲突的算法，hashmap 是链式的，也就是给桶上链表，如果 key 存在的话，就替换 value 值。&lt;/p&gt;
+&lt;p&gt;对于线程安全，hashtable 和 concurrenthashmap 都安全，但是基本不怎么用 hahstable，反正我是没用过，hashtable 是不支持 key 和 value 为 null 的，但是 hashmap 可以。&lt;/p&gt;
+&lt;p&gt;接下来就说一说 concurrenthashmap，1.7 是使用的 segment 分段锁，segment 继承 reentrantlock，对每一端的访问进行加锁，这应该就是比 hashtable 高效的地方吧，hashtable 是对整个 table 进行上锁的。&lt;/p&gt;
+&lt;p&gt;1.8 之后就换成了 cas+synchronized，并且 segment 也取消了，改成了桶上锁，也就是桶可以理解为同一个 hash 值，也就是存放链表的地方，对这个进行加锁，也就是细化了 segment&lt;/p&gt;
+&lt;p&gt;对于 cas 的使用我记得是在 put 的时候没有元素的情况下进行 cas 赋初值，如果有值也就是发生 hash 冲突的情况下就转为 synchronized 进行上锁。（对于比较复杂的场景，hash 冲突和扩容，就用 synchronized 进行上锁，其余的用 cas 来解决冲突问题）&lt;/p&gt;
+&lt;p&gt;个人理解什么 entry 数组 + segment + 链表，我理解就是对数组的段分为了 segment，其实就是比数组 + 链表多了个 segment 而已&lt;/p&gt;
+&lt;p&gt;后面转红黑树，也就是涉及到红黑树的转换情况，将链表转为红黑树的场景要满足两点：1，一条练上的节点 &amp;gt;=8；2，容量大于 &amp;gt;=64；从红黑树退化为链表是元素 &amp;lt;=6&lt;/p&gt;
+</content>
+        <category term="hashmap" />
+        <updated>2023-10-17T13:09:09.000Z</updated>
+    </entry>
+</feed>

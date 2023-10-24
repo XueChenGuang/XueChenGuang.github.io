@@ -24,6 +24,9 @@
         <category>多线程</category>
         <category>kafka</category>
         <category>SpringBoot</category>
+        <category>JUC相关零碎知识点乱写</category>
+        <category>hashmap</category>
+        <category>JUC</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/10/12/kafka%E7%9B%B8%E5%85%B3/</guid>
             <title>kafka相关</title>
@@ -43,6 +46,8 @@
 &lt;h3 id=&#34;如何保证消息不丢失&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何保证消息不丢失&#34;&gt;#&lt;/a&gt; 如何保证消息不丢失&lt;/h3&gt;
 &lt;p&gt;&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC80NTk2MTA0MTg=&#34;&gt;https://zhuanlan.zhihu.com/p/459610418&lt;/span&gt;&lt;br&gt;
  这篇写挺好的&lt;/p&gt;
+&lt;h3 id=&#34;如何实现高效读写的&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何实现高效读写的&#34;&gt;#&lt;/a&gt; 如何实现高效读写的&lt;/h3&gt;
+&lt;p&gt;页缓存 page cache（操作系统级的缓存） + 顺序写（通过末尾追加的方式写入数据） + 零拷贝（如果不做任何处理就是磁盘 - os cache - 应用缓存 - socket 缓存 - 网卡发送） 零拷贝就去掉了冗余的拷贝过程，直接让 socket 与网卡交互，socket 缓存了数据的描述，具体的数据直接通过 os cache 发送给网卡&lt;/p&gt;
  ]]></description>
         </item>
     </channel>
