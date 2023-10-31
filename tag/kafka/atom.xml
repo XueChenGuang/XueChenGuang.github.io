@@ -24,6 +24,8 @@
     <category term="JUC相关零碎知识点乱写" />
     <category term="hashmap" />
     <category term="JUC" />
+    <category term="redis" />
+    <category term="springboot" />
     <entry>
         <id>http://example.com/2023/10/12/kafka%E7%9B%B8%E5%85%B3/</id>
         <title>kafka相关</title>
@@ -40,7 +42,10 @@
 &lt;p&gt;如果参数设置 auto-commit 为 true 的话，那么 offset 可能会提交不成功，那么就会导致重复消费；所以如果要防止重复消费，这个参数要设置成 false，具体的实现应该是 consumer 自主控制 offset。&lt;/p&gt;
 &lt;h3 id=&#34;如何保证消息不丢失&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何保证消息不丢失&#34;&gt;#&lt;/a&gt; 如何保证消息不丢失&lt;/h3&gt;
 &lt;p&gt;&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly96aHVhbmxhbi56aGlodS5jb20vcC80NTk2MTA0MTg=&#34;&gt;https://zhuanlan.zhihu.com/p/459610418&lt;/span&gt;&lt;br&gt;
- 这篇写挺好的&lt;/p&gt;
+ 这篇写挺好的&lt;br&gt;
+从三个方面来回答，producer 端，选用的同步策略默认是 1 对接 leader broker；0 发完就完事；all -1 等待所有的 follower；如果要保证发送端不丢的话就尽量增加接收的 follower 数，并且也要设置淘汰队列的最小数，也就是长时间未同步的副本会被踢出同步队列，这样全部踢完的话，那么 producer 端对接的 leader 挂掉的话，就会产生消息丢失了。&lt;/p&gt;
+&lt;p&gt;broker 端，应为采用的页缓存，也就是 cpu 缓存，并且刷盘的策略是由操作系统完成的，所以这个时候就是会产生 broker 端挂掉，但是数据没刷盘的情况，所以保证 broker 端数据不丢的话，还是就是副本多完事&lt;/p&gt;
+&lt;p&gt;consumer 端，导致的原因就是 offset 了，自动提交的话会导致业务挂了，但是 offset 后移了，那么就是消息丢失了，所以为了保证不丢，那么最好关掉 offset，并且先执行逻辑，然后提交 offset，这样就会出现重复消费的情况，那么可以选择加入幂等策略。&lt;/p&gt;
 &lt;h3 id=&#34;如何实现高效读写的&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#如何实现高效读写的&#34;&gt;#&lt;/a&gt; 如何实现高效读写的&lt;/h3&gt;
 &lt;p&gt;页缓存 page cache（操作系统级的缓存） + 顺序写（通过末尾追加的方式写入数据） + 零拷贝（如果不做任何处理就是磁盘 - os cache - 应用缓存 - socket 缓存 - 网卡发送） 零拷贝就去掉了冗余的拷贝过程，直接让 socket 与网卡交互，socket 缓存了数据的描述，具体的数据直接通过 os cache 发送给网卡&lt;/p&gt;
 </content>

@@ -24,6 +24,8 @@
     <category term="JUC相关零碎知识点乱写" />
     <category term="hashmap" />
     <category term="JUC" />
+    <category term="redis" />
+    <category term="springboot" />
     <entry>
         <id>http://example.com/2023/10/06/%E7%BA%BF%E7%A8%8B%E6%B1%A0/</id>
         <title>线程池</title>

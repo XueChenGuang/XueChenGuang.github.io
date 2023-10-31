@@ -27,6 +27,8 @@
         <category>JUC相关零碎知识点乱写</category>
         <category>hashmap</category>
         <category>JUC</category>
+        <category>redis</category>
+        <category>springboot</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/10/10/SQL%E4%BC%98%E5%8C%96/</guid>
             <title>SQL优化</title>

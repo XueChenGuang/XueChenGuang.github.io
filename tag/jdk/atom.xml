@@ -24,6 +24,8 @@
     <category term="JUC相关零碎知识点乱写" />
     <category term="hashmap" />
     <category term="JUC" />
+    <category term="redis" />
+    <category term="springboot" />
     <entry>
         <id>http://example.com/2023/10/10/JDK8%E7%9A%84%E6%94%B9%E5%8A%A8/</id>
         <title>JDK8的改动</title>

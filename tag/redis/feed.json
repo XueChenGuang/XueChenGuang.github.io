@@ -5,6 +5,16 @@
     "home_page_url": "http://example.com",
     "items": [
         {
+            "id": "http://example.com/2023/10/26/redis%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/",
+            "url": "http://example.com/2023/10/26/redis%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/",
+            "title": "redis主从复制",
+            "date_published": "2023-10-26T03:16:00.000Z",
+            "content_html": "<h3 id=\"写在前面\"><a class=\"markdownIt-Anchor\" href=\"#写在前面\">#</a> 写在前面</h3>\n<p>写麻了，唉，一言难尽；什么时候能说出那句 “轻舟已过，万重山。。。。</p>\n<h3 id=\"主从复制\"><a class=\"markdownIt-Anchor\" href=\"#主从复制\">#</a> 主从复制</h3>\n<p>感觉小林 coding 的这个主从复制有点片面或者不全，看懂了，总结一下</p>\n<p>尽量简短点说吧，主要为了面试。</p>\n<p>主从复制出现的场景就是读写分离，分摊主服务器的压力。master 负责写，slave 负责读。那么就会存在主服务器的同步问题，也就是主服务器的写数据如何同步到从服务器。  这里说一点我的想法，主从复制一定会导致脏读现象的，也就是说 master 更新了，但是 slave 没有更新；感觉这就涉及到 cap 了，如果你想要强一致那么就写 master 的时候禁止 slave 读，但这也太离谱了；所以大多数的情况肯定是 ap，保证最终一致就行了。</p>\n<p>但是小林 coding 没有说这一点，所以应该是默认这种情况的存在的。</p>\n<p>通过 replicof 声明主从关系，然后发起连接；最关键的就是两个字段一个是 master 的 id，以及 offset。然后主服务器发送 id 以及 offset。</p>\n<p>出实情况下 offset 是 - 1；采用全量复制 RDB 覆盖从服务器上面的数据。然后建立长连接来进行命令传播。传播 master 的写命令。</p>\n<p>那么长连接由于网络波动断掉了，那么就需要重连，这个时候存在着数据丢失的问题。master 维护着一个 repl_backlog_buffer，也就是缓冲区了，环形缓冲。slave 发起端开重连，并且给出 offset，如果 offset 在 buffer 里面（buffer 会有 master 的 offset，和 slave 的 offset）那就增量复制，否则采用全量 RDB。</p>\n<p>全量 RDB，前面学过 bgsave，通过 fork 子进程来实现的。fork 有页表复制，这个是会阻塞主进程的。如果页表过大，或者频繁的进行 fork，那么是会造成 master 的处理异常。并且发送 RDB 也会占用 master 的带宽，所以可以让从服务器 replicaof 从服务器，这样就会出现经理的角色。</p>\n<p>这边需要注意一点，在生成 RDB，发送 RDB，从服务器加载 RDB 的期键，master 会接入新数据，这个是存在 replica buffer 里面的，所以同步有两阶段。一个是发送 RDB，还有一个是同步 replica buffer 里面的增量。</p>\n<p>但是后面的话就不是同一个 buffer 了，是个 backlog buffer。就是长连接端开后的增量复制，这个环形 buffer。但是我觉得说一下 buffer 就完事了。</p>\n",
+            "tags": [
+                "redis"
+            ]
+        },
+        {
             "id": "http://example.com/2023/10/04/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/",
             "url": "http://example.com/2023/10/04/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/",
             "title": "Redis数据结构",
@@ -25,11 +35,11 @@
             ]
         },
         {
-            "id": "http://example.com/2023/09/20/Redis%E7%BC%93%E5%AD%98/",
-            "url": "http://example.com/2023/09/20/Redis%E7%BC%93%E5%AD%98/",
-            "title": "Redis缓存",
+            "id": "http://example.com/2023/09/20/Redis%E7%BC%93%E5%AD%98%E5%90%8C%E6%AD%A5%E7%AD%96%E7%95%A5/",
+            "url": "http://example.com/2023/09/20/Redis%E7%BC%93%E5%AD%98%E5%90%8C%E6%AD%A5%E7%AD%96%E7%95%A5/",
+            "title": "Redis缓存同步策略",
             "date_published": "2023-09-20T14:23:45.000Z",
-            "content_html": "<h3 id=\"前言\"><a class=\"markdownIt-Anchor\" href=\"#前言\">#</a> 前言</h3>\n<p>一切都是为了更流利的表达</p>\n<h3 id=\"缓存雪崩-击穿-穿透的定义以及解决方案\"><a class=\"markdownIt-Anchor\" href=\"#缓存雪崩-击穿-穿透的定义以及解决方案\">#</a> 缓存雪崩、击穿、穿透的定义以及解决方案</h3>\n<h3 id=\"缓存同步策略\"><a class=\"markdownIt-Anchor\" href=\"#缓存同步策略\">#</a> 缓存同步策略</h3>\n<h3 id=\"高可用\"><a class=\"markdownIt-Anchor\" href=\"#高可用\">#</a> 高可用</h3>\n",
+            "content_html": "<h3 id=\"前言\"><a class=\"markdownIt-Anchor\" href=\"#前言\">#</a> 前言</h3>\n<p>一切都是为了更流利的表达</p>\n<h3 id=\"缓存同步策略\"><a class=\"markdownIt-Anchor\" href=\"#缓存同步策略\">#</a> 缓存同步策略</h3>\n<p><span class=\"exturl\" data-url=\"aHR0cHM6Ly9qdWVqaW4uY24vcG9zdC83MDI0ODI1MzkzMDE4MzA2NTc0\">https://juejin.cn/post/7024825393018306574</span><br>\n 吹爆，这篇写的真的很好。</p>\n<p>知识输出的时候到了，看了上面的文章之后，思路通达了很多。</p>\n<p>对于缓存同步策略，也就是为了解决 mysql+redis 之后数据不一致的问题。这个一致和事务一致有些区别，但是在思想上还是差不多的，都有涉及到 cp，ap 思想。</p>\n<p>展开说的话就是：</p>\n<ul>\n<li>更新，先更新数据库还是 Redis 呢？更新的好处就是不会出现缓存打空的情况。</li>\n<li>删除，先删 Redis 还是先更数据库呢？</li>\n</ul>\n<p>更新的话，无论是先更新数据库还是先更新缓存都会出现多请求而出现数据不一致的情况 A 更 1，B 更 2</p>\n<ul>\n<li>A 更数据库 1</li>\n<li>B 更数据库 2</li>\n<li>B 更缓存 2</li>\n<li>A 更缓存 1<br>\n 最终就是 1，同理选择先更缓存再更数据库也是一样。相比 read，write 更耗时，所以比较频繁出现上面的情况。</li>\n</ul>\n<p>删除的话，就是 A 请求删，B 请求读。</p>\n<ul>\n<li>（之前是 1）A 删缓存</li>\n<li>B 读缓存（没有），读数据库（1）</li>\n<li>B 将 1 写入到缓存</li>\n<li>A 将数据库写为 2<br>\n 那么就造成了数据库和缓存不一致了，先删缓存有改进策略就是延迟双删，也就是更改的这个请求的后端加上一个 sleep，确保同时间有读的一定可以读完并且更改了缓存，所以无论是读到旧数据还是新数据，后面都再加一个删除 redis，这样下次有请求来的话，肯定就是再读数据库，这样肯定就是新值了。</li>\n</ul>\n<p>如果是先更数据库，然后删缓存的情况。</p>\n<ul>\n<li>A 读缓存，缓存中不存在，此时去读数据库</li>\n<li>A 读到 1，准备写入缓存</li>\n<li>B 修改数据库，改为 2</li>\n<li>B 删除缓存</li>\n<li>A 将 1 写入缓存<br>\n出现不一致，可见上面 A 的读取写缓存要涵盖整个 mysql 的 update 以及删缓存，这个情况基本不会出现，概率很小，毕竟 update 的耗时是远大于 read 的。</li>\n</ul>\n<p>以上的情况都是建立再 mysql 和 redis 都成功的情况下，毕竟是两个服务，从实现来说的话就是两个进程，这个是没有事务的，如果要实现一致性，也就是需要确保一个成功另一个必然成功的情况，来了<br>\n 1、重试，确实是我 mysql 更新完了之后，redis 删除失败，重试删除<br>\n 2、同步还是异步，同步的话就是强一致，也就是 cp。从同步的角度来讲就是严重影响吞吐量，因为这一条请求就会一直在，知道 redis 删除成功才结束。<br>\n3、使不使用中间件，也就是异步是如何实现的，肯定有一个中间件在充当着重发的这个角色，那么就是 mq 了<br>\n 4、对于异步的话，是直接使用 mq 来接收 redis 的删除请求，然后不停的重试直到成功，还是使用 canal（阿里开源）模拟从库请求主库的 binlog，只要 mysql 写入成功，那么就有 binlog，那么 canal 就会拿到信息从而完成下游的任务发给 mq，保证了消息生产的不丢失。</p>\n",
             "tags": [
                 "Redis"
             ]

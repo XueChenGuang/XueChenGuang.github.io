@@ -27,6 +27,8 @@
         <category>JUC相关零碎知识点乱写</category>
         <category>hashmap</category>
         <category>JUC</category>
+        <category>redis</category>
+        <category>springboot</category>
         <item>
             <guid isPermalink="true">http://example.com/2023/10/07/IOC%E5%92%8CAOP/</guid>
             <title>IOC和AOP</title>
@@ -119,8 +121,13 @@
 &lt;p&gt;常见的破坏双亲委派机制的场景，常见的有两个：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;热部署，也就是通过直接加载最新的类，完成热部署，但是这个类名是完全相同的，所以要完成类的加载，那么就需要使用不同的类加载器，所以破坏了唯一加载的原则&lt;/li&gt;
-&lt;li&gt;SPI 的实现如 JDBC，也就是核心类需要依靠外部类的情况，典型的就是数据库的加载，不同的厂商依据同一套规则给出不同的实现，那么类加载的时候，到上层 bootstrap 只能加载核心的类，但是核心类依赖外部类的实现（也就是 classpath 下的类），那么这个时候就直接调用线程上下文类加载器完成类的加载。  PS：这边讲一下为什么用线程上下文而不是用 system 直接指定，因为不同的部署环境，他们的类加载器不同，比如 web 等，用的不一定是 system，那么使用线程动态获取，是最合适的。&lt;/li&gt;
+&lt;li&gt;SPI 的实现如 JDBC，也就是核心类需要依靠外部类的情况，典型的就是数据库的加载，不同的厂商依据同一套规则给出不同的实现，那么类加载的时候，到上层 bootstrap 只能加载核心的类，但是核心类依赖外部类的实现（也就是 classpath 下的类），那么双亲委派的原则， 当前类所依赖的类也应该由加载当前类的加载器来加载，但是 bootstrap loader 明显是不能加载三方 user 类的。那么这个时候就直接调用线程上下文类加载器完成类的加载。  PS：这边讲一下为什么用线程上下文而不是用 system 直接指定，因为不同的部署环境，他们的类加载器不同，比如 web 等，用的不一定是 system，那么使用线程动态获取，是最合适的。&lt;/li&gt;
+&lt;li&gt;tomcat，这边刚开始看还有点摸不着头脑，但是看到后面貌似也就那么回事。因为 web 有应用场景。tomcat 作为 web 的容器，那么有多个 web 应用呢，版本不同但是类的全限定名是相同的，也就是实现不同，这个时候怎么加载，如果交给父亲加载，那么必然就只有一个，不存在不同版本的。所以 tomcat 重写了 loadclass 方法，设计了 webappclassloader。优先加载当前目录下的类，如果没有再一层层往上找。对于 webapp 这一层是破坏了双亲委派的。但是对于 catalinaclassloader 加载 tomcat 内部，shareclassloader，common 等这一层是没有破坏双亲委派的，因为他们需要唯一，都共享还不唯一干啥。&lt;/li&gt;
 &lt;/ul&gt;
+&lt;p&gt;从这里就可以看出，双亲委派就是为了确保唯一的。所以当我想要不同的版本共存，需要破坏 tomcat。当我一直回溯到上层但是当前的类加载器加载不了我依赖的三方，需要破坏 spi，jdbc，jndi。。&lt;/p&gt;
+&lt;p&gt;对于 jspclassloader，这个重写 loadclass 就是监听 update time 来重新进行类加载，从而实现热部署，也就是这个 jsploader 是及时销毁的。&lt;/p&gt;
+&lt;p&gt;对于 JDBC 破坏的双亲委派，网上有个说的很好，说见仁见智。我也就的有点这种感觉吧。其主要的核心就是 drivermanager.getconnection 获取三方厂商的 jdbc 实现。但是 drivermanager 是 lib 下的核心类库，也就是通过 bootstrap 加载的。但是类加载机制规定与当前类相关的类需要通过当前类的类加载器来加载。但是这个三方实现的类肯定无法通过 bootstrap 来加载。因为 spi 规定放在了 classpath 的 metainfo/service 下面了。所以在 drivermanager 的初始化里面调用了 serviceloader，直接使用上下文加载器来加载。也就是不是同一个类加载器了。但是正常的话就是回调麻。也就是 bootstrap 加载不了就回来 ext，最终还是要回到 apploader 的。所以见仁见智也是有道理的。&lt;/p&gt;
+&lt;p&gt;补充一点，对于 drivermanager 是通过 bootstraploader 加载的，但是其依赖的三方类库，通过类加载机制，无法加载成功，如果不通过调用 context loader 来加载的话就会加载失败。所以破坏了双亲委派。&lt;/p&gt;
 &lt;p&gt;这篇讲的很好&lt;span class=&#34;exturl&#34; data-url=&#34;aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2phdmF6ZWppYW4vYXJ0aWNsZS9kZXRhaWxzLzczNDEzMjky&#34;&gt; https://blog.csdn.net/javazejian/article/details/73413292&lt;/span&gt;&lt;/p&gt;
 &lt;h3 id=&#34;bean的生命周期&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#bean的生命周期&#34;&gt;#&lt;/a&gt; Bean 的生命周期&lt;/h3&gt;
 &lt;p&gt;对于 bean 的生命周期大致就可以说三个，&lt;/p&gt;
@@ -133,6 +140,13 @@
 &lt;p&gt;其中涉及到 bean 如果继承了某些类的话，就可以使用钩子来在固定的节点加入一些自定义的处理。例如 aware 就是在属性填充之后，还可以继承 BeanPostProcessor 来在初始化前后进行一些处理&lt;/p&gt;
 &lt;p&gt;感觉也就这么多，这边就会涉及到循环依赖吧，按照网上的说法，bean 的实例化包含了 JVM 的一系列过程，感觉是这么回事，，，。&lt;/p&gt;
 &lt;h3 id=&#34;thread的生命周期&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#thread的生命周期&#34;&gt;#&lt;/a&gt; Thread 的生命周期&lt;/h3&gt;
+&lt;p&gt;&lt;img data-src=&#34;https://pic.imgdb.cn/item/653c7540c458853aef3b34d9.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;个人说一下理解，&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;runnable 的前一个状态必然是 ready，所以 start 之后，也是先 ready 等待时间片的&lt;/li&gt;
+&lt;li&gt;至于 waiting 和 timed waiting，直观的也就是 wait 和 sleep 的调用了，也就是加时间的会进入 timed waiting，不会释放锁仅仅让出 cpu&lt;/li&gt;
+&lt;li&gt;对于 waiting 和 blocked，感觉是 jvm 层面的东西了，也就是使用 aqs 并没有涉及到操作系统的调度的，也就是 lockSupport.part () 是进入 waiting 状态。但是 synchronized 使用了 monitor 锁的，就会进入 blocked 状态，交由操作系统调度。&lt;/li&gt;
+&lt;/ul&gt;
  ]]></description>
         </item>
     </channel>

@@ -5,8 +5,8 @@
         <link>http://example.com</link>
         <description>孵化中···</description>
         <language>zh-CN</language>
-        <pubDate>Mon, 16 Oct 2023 21:02:59 +0800</pubDate>
-        <lastBuildDate>Mon, 16 Oct 2023 21:02:59 +0800</lastBuildDate>
+        <pubDate>Wed, 25 Oct 2023 21:38:04 +0800</pubDate>
+        <lastBuildDate>Wed, 25 Oct 2023 21:38:04 +0800</lastBuildDate>
         <category>hello blog</category>
         <category>设计模式</category>
         <category>MySQL</category>
@@ -27,6 +27,28 @@
         <category>JUC相关零碎知识点乱写</category>
         <category>hashmap</category>
         <category>JUC</category>
+        <category>redis</category>
+        <category>springboot</category>
+        <item>
+            <guid isPermalink="true">http://example.com/2023/10/25/springboot%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/</guid>
+            <title>springboot启动流程</title>
+            <link>http://example.com/2023/10/25/springboot%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/</link>
+            <category>springboot</category>
+            <pubDate>Wed, 25 Oct 2023 21:38:04 +0800</pubDate>
+            <description><![CDATA[ &lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;springboot 的启动流程很复杂，玛德&lt;/p&gt;
+&lt;h3 id=&#34;随便写点&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#随便写点&#34;&gt;#&lt;/a&gt; 随便写点&lt;/h3&gt;
+&lt;p&gt;对于 springboot 的启动流程，主要是从 @springbootapplication 注解开始，大的启动流程有以下几个：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;从 main 进入&lt;/li&gt;
+&lt;li&gt;初始化配置，感觉也就是自动装配了，与 classpath 下面的 spring.factory 相关，然后就是创建 environment 对象，加载 application.yml&lt;/li&gt;
+&lt;li&gt;创建上下文也就是 context，所谓的 bean 工厂了&lt;/li&gt;
+&lt;li&gt;刷新上下文，里面较为复杂，涉及到 web 服务器对象的加载 tomcat 等，具体没了解；感觉更多的像是在初始化 bean&lt;/li&gt;
+&lt;li&gt;通知监听者，启动完成&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;问到就这么乱答，根本不会。&lt;/p&gt;
+ ]]></description>
+        </item>
         <item>
             <guid isPermalink="true">http://example.com/2023/10/16/SpringBoot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/</guid>
             <title>SpringBoot自动装配</title>
@@ -36,7 +58,7 @@
             <description><![CDATA[ &lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
 &lt;p&gt;对于 spring boot 的装配或者说启动流程，确实比较复杂，最近了解的内容感觉仅仅只能用作面试的回答。&lt;/p&gt;
 &lt;h3 id=&#34;自动装配&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#自动装配&#34;&gt;#&lt;/a&gt; 自动装配&lt;/h3&gt;
-&lt;p&gt;对于 spring boot 而言，最典型的就是 @springbootapplication 这个注解，组合注解，包括主要的三个注解 @springbootconfiguration、@import、componentscan&lt;/p&gt;
+&lt;p&gt;对于 spring boot 而言，最典型的就是 @springbootapplication 这个注解，组合注解，包括主要的三个注解 @springbootconfiguration、@import、@componentscan&lt;/p&gt;
 &lt;p&gt;@springbootconfiguration 继承 @configuration 注解，也就是将当前类给加载到 context 中（IOC 容器）&lt;br&gt;
 @componentscan 就是表明要扫描的包，也就是所谓的扫描和 application 同级的所在的所有的包中的 bean，来注入。&lt;br&gt;
 @import 才是自动装配的核心注解，其中实现的 autoimportselector，采用 spi 思想，完成第三方 jar 包的自动注入，统一的原则就是加载 META-info 下面的 spring.factory 配置文件（以键值对的方式存储配置），key 是 autoconfiguration 的值会被放到 context 中，然后不停的重复这个过程，直至所有的第三方 jar 包都被加载&lt;/p&gt;

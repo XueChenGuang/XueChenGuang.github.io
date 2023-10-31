@@ -24,6 +24,8 @@
     <category term="JUC相关零碎知识点乱写" />
     <category term="hashmap" />
     <category term="JUC" />
+    <category term="redis" />
+    <category term="springboot" />
     <entry>
         <id>http://example.com/2023/10/22/threadlocal/</id>
         <title>threadlocal</title>

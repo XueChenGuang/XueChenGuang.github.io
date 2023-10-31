@@ -5,11 +5,21 @@
     "home_page_url": "http://example.com",
     "items": [
         {
+            "id": "http://example.com/2023/10/25/springboot%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/",
+            "url": "http://example.com/2023/10/25/springboot%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/",
+            "title": "springboot启动流程",
+            "date_published": "2023-10-25T13:38:04.000Z",
+            "content_html": "<h3 id=\"写在前面\"><a class=\"markdownIt-Anchor\" href=\"#写在前面\">#</a> 写在前面</h3>\n<p>springboot 的启动流程很复杂，玛德</p>\n<h3 id=\"随便写点\"><a class=\"markdownIt-Anchor\" href=\"#随便写点\">#</a> 随便写点</h3>\n<p>对于 springboot 的启动流程，主要是从 @springbootapplication 注解开始，大的启动流程有以下几个：</p>\n<ul>\n<li>从 main 进入</li>\n<li>初始化配置，感觉也就是自动装配了，与 classpath 下面的 spring.factory 相关，然后就是创建 environment 对象，加载 application.yml</li>\n<li>创建上下文也就是 context，所谓的 bean 工厂了</li>\n<li>刷新上下文，里面较为复杂，涉及到 web 服务器对象的加载 tomcat 等，具体没了解；感觉更多的像是在初始化 bean</li>\n<li>通知监听者，启动完成</li>\n</ul>\n<p>问到就这么乱答，根本不会。</p>\n",
+            "tags": [
+                "springboot"
+            ]
+        },
+        {
             "id": "http://example.com/2023/10/16/SpringBoot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/",
             "url": "http://example.com/2023/10/16/SpringBoot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/",
             "title": "SpringBoot自动装配",
             "date_published": "2023-10-16T13:02:59.000Z",
-            "content_html": "<h3 id=\"写在前面\"><a class=\"markdownIt-Anchor\" href=\"#写在前面\">#</a> 写在前面</h3>\n<p>对于 spring boot 的装配或者说启动流程，确实比较复杂，最近了解的内容感觉仅仅只能用作面试的回答。</p>\n<h3 id=\"自动装配\"><a class=\"markdownIt-Anchor\" href=\"#自动装配\">#</a> 自动装配</h3>\n<p>对于 spring boot 而言，最典型的就是 @springbootapplication 这个注解，组合注解，包括主要的三个注解 @springbootconfiguration、@import、componentscan</p>\n<p>@springbootconfiguration 继承 @configuration 注解，也就是将当前类给加载到 context 中（IOC 容器）<br>\n@componentscan 就是表明要扫描的包，也就是所谓的扫描和 application 同级的所在的所有的包中的 bean，来注入。<br>\n@import 才是自动装配的核心注解，其中实现的 autoimportselector，采用 spi 思想，完成第三方 jar 包的自动注入，统一的原则就是加载 META-info 下面的 spring.factory 配置文件（以键值对的方式存储配置），key 是 autoconfiguration 的值会被放到 context 中，然后不停的重复这个过程，直至所有的第三方 jar 包都被加载</p>\n<p>对于 SPI，JDBC 也有用到，主要的思想就是给出一套规定，然后不同的提供者也就是三方去实现，我们只需要引入 jar 包即可，但是如果仅仅是这样，那么程序员仍然要通过 configuration 打入相应的 string，来选择使用哪一个，这就将配置的这个值交给了第三方厂商，让他们在指定位置创建这个配置文件，spi 只需要提供规则，然后去解析，即可。程序员只需要引入 jar 包就完事。</p>\n",
+            "content_html": "<h3 id=\"写在前面\"><a class=\"markdownIt-Anchor\" href=\"#写在前面\">#</a> 写在前面</h3>\n<p>对于 spring boot 的装配或者说启动流程，确实比较复杂，最近了解的内容感觉仅仅只能用作面试的回答。</p>\n<h3 id=\"自动装配\"><a class=\"markdownIt-Anchor\" href=\"#自动装配\">#</a> 自动装配</h3>\n<p>对于 spring boot 而言，最典型的就是 @springbootapplication 这个注解，组合注解，包括主要的三个注解 @springbootconfiguration、@import、@componentscan</p>\n<p>@springbootconfiguration 继承 @configuration 注解，也就是将当前类给加载到 context 中（IOC 容器）<br>\n@componentscan 就是表明要扫描的包，也就是所谓的扫描和 application 同级的所在的所有的包中的 bean，来注入。<br>\n@import 才是自动装配的核心注解，其中实现的 autoimportselector，采用 spi 思想，完成第三方 jar 包的自动注入，统一的原则就是加载 META-info 下面的 spring.factory 配置文件（以键值对的方式存储配置），key 是 autoconfiguration 的值会被放到 context 中，然后不停的重复这个过程，直至所有的第三方 jar 包都被加载</p>\n<p>对于 SPI，JDBC 也有用到，主要的思想就是给出一套规定，然后不同的提供者也就是三方去实现，我们只需要引入 jar 包即可，但是如果仅仅是这样，那么程序员仍然要通过 configuration 打入相应的 string，来选择使用哪一个，这就将配置的这个值交给了第三方厂商，让他们在指定位置创建这个配置文件，spi 只需要提供规则，然后去解析，即可。程序员只需要引入 jar 包就完事。</p>\n",
             "tags": [
                 "SpringBoot"
             ]

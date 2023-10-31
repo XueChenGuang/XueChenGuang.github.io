@@ -3,7 +3,7 @@
     <id>http://example.com</id>
     <title>该死的秋招 • Posts by &#34;其他&#34; tag</title>
     <link href="http://example.com" />
-    <updated>2023-09-22T03:28:03.000Z</updated>
+    <updated>2023-10-31T06:25:59.000Z</updated>
     <category term="hello blog" />
     <category term="设计模式" />
     <category term="MySQL" />
@@ -24,6 +24,41 @@
     <category term="JUC相关零碎知识点乱写" />
     <category term="hashmap" />
     <category term="JUC" />
+    <category term="redis" />
+    <category term="springboot" />
+    <entry>
+        <id>http://example.com/2023/10/31/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/</id>
+        <title>加密解密</title>
+        <link rel="alternate" href="http://example.com/2023/10/31/%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;对于加密解密，看场景题看到的，做一下记录&lt;/p&gt;
+&lt;h3 id=&#34;算法&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#算法&#34;&gt;#&lt;/a&gt; 算法&lt;/h3&gt;
+&lt;p&gt;有对称加密算法 AES、DES 等&lt;br&gt;
+也就是明文经过同一套密钥进行加密解密，优缺点都很明显，优点就是快，缺点就是容易被拦截，信息安全没有保障。&lt;/p&gt;
+&lt;p&gt;非对称加密，也就是公钥私钥这一套&lt;br&gt;
+公钥私钥是由 server 端生成的，并且私钥留存在 server 端，公钥分发给 client；这样的模式也能够进行数字签名，因为 client 使用公钥来解 server 端给出的用私钥加密过的文件。&lt;/p&gt;
+&lt;p&gt;优缺点也是明显，优点就是可以保证安全；缺点就是很慢，因为多了一个请求公钥的过程，并且每次都要通过公私钥进行加解密，比较复杂所以就很慢。&lt;/p&gt;
+&lt;p&gt;优化就是 mix，将对称加密的算法通过公私钥进行传递给双方，然后下面就通过对称加密进行数据传输，所以刚开始这个对称加密的算法是不会被拦截的，并且也就是第一次较慢，后面很快。&lt;/p&gt;
+</content>
+        <category term="其他" />
+        <updated>2023-10-31T06:25:59.000Z</updated>
+    </entry>
+    <entry>
+        <id>http://example.com/2023/10/28/%E8%81%8C%E4%B8%9A%E8%A7%84%E5%88%92/</id>
+        <title>职业规划</title>
+        <link rel="alternate" href="http://example.com/2023/10/28/%E8%81%8C%E4%B8%9A%E8%A7%84%E5%88%92/"/>
+        <content type="html">&lt;h3 id=&#34;职业规划&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#职业规划&#34;&gt;#&lt;/a&gt; 职业规划&lt;/h3&gt;
+&lt;p&gt;当被问到职业规划的时候，其实也是一个比较有挑战的一个问题。遵从本心吧。&lt;/p&gt;
+&lt;p&gt;对于 java 的规划路线我还是比较熟悉的。对于一些基础例如计网、数据结构、算法以及操作系统等在学校已经打好基础了。对于项目经验的话，目前对于并发编程以及分布式，这也是行业中的难点。所以如果有机会会在实际工作中更偏向于这块的技术提升。个人也是比较喜欢技术的，更偏向于转架构师。&lt;/p&gt;
+&lt;p&gt;架构师的基础对于 java 来说，并且是 web 来说，更需要一些并发的底层 juc 的工具包底层 aqs，源码以及知识点也了解不少，jvm 性能调优也就是 gc 以及内存管理以及 JVM 的众多参数&lt;/p&gt;
+&lt;p&gt;1、公司适应，有实习基础，公司的开发模式&lt;br&gt;
+ 2、技术提升，持续学习，技术迭代（对于有一定了解但是接触很少的技术在公司中实践提升。&lt;br&gt;
+3、架构师（由面向功能转面向性能，整体架构，技术选型，jvm，并发，工具调参等等）&lt;/p&gt;
+&lt;p&gt;保持一个持续学习的思想，因为本身计算机的技术迭代还是很快的。&lt;/p&gt;
+</content>
+        <category term="其他" />
+        <updated>2023-10-28T03:17:16.000Z</updated>
+    </entry>
     <entry>
         <id>http://example.com/2023/09/22/%E7%AC%94%E8%AF%95%E9%80%89%E6%8B%A9%E9%A2%98%E9%9B%B6%E6%95%A3%E7%9F%A5%E8%AF%86%E7%82%B9-%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/</id>
         <title>笔试选择题零散知识点--持续更新</title>

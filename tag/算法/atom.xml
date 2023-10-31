@@ -24,6 +24,8 @@
     <category term="JUC相关零碎知识点乱写" />
     <category term="hashmap" />
     <category term="JUC" />
+    <category term="redis" />
+    <category term="springboot" />
     <entry>
         <id>http://example.com/2023/09/20/UF%E5%92%8CKruskal/</id>
         <title>UF和Kruskal</title>

@@ -3,7 +3,7 @@
     <id>http://example.com</id>
     <title>该死的秋招 • Posts by &#34;分布式&#34; tag</title>
     <link href="http://example.com" />
-    <updated>2023-09-28T07:06:03.000Z</updated>
+    <updated>2023-10-25T10:31:08.000Z</updated>
     <category term="hello blog" />
     <category term="设计模式" />
     <category term="MySQL" />
@@ -24,6 +24,26 @@
     <category term="JUC相关零碎知识点乱写" />
     <category term="hashmap" />
     <category term="JUC" />
+    <category term="redis" />
+    <category term="springboot" />
+    <entry>
+        <id>http://example.com/2023/10/25/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/</id>
+        <title>分布式保证数据一致性</title>
+        <link rel="alternate" href="http://example.com/2023/10/25/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/"/>
+        <content type="html">&lt;h3 id=&#34;写在前面&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#写在前面&#34;&gt;#&lt;/a&gt; 写在前面&lt;/h3&gt;
+&lt;p&gt;亚信安全的面试，只能说运气不佳吧，说了我特么不会分布式，还特么逮住分布式问，这咋弄，只能继续沉淀了。&lt;br&gt;
+但是这个问题是有点大的，并且实现起来也不是能够说清楚的，回来网上查了一些资料，总感觉说的云里雾里，更偏向于理论层面。&lt;/p&gt;
+&lt;h3 id=&#34;一致性&#34;&gt;&lt;a class=&#34;markdownIt-Anchor&#34; href=&#34;#一致性&#34;&gt;#&lt;/a&gt; 一致性&lt;/h3&gt;
+&lt;p&gt;之前被问一致性的时候，确实懵了，但是按我个人的理解，这里的一致性确实是有分类的&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;主从一致，也就是数据一致，这个完全可以说道说道&lt;/li&gt;
+&lt;li&gt;事务一致，也就是当前业务涉及到多个 soa 以及多个数据库的操作，这叫做分布式事务&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;那么针对上面两个场景的回答，我觉得是完全不同的&lt;/p&gt;
+</content>
+        <category term="分布式" />
+        <updated>2023-10-25T10:31:08.000Z</updated>
+    </entry>
     <entry>
         <id>http://example.com/2023/09/28/%E5%B9%82%E7%AD%89%E5%AE%9E%E7%8E%B0/</id>
         <title>幂等实现</title>
